@@ -21,5 +21,5 @@ func main() {
 	router := internal.NewRouter()
 	log.Print("listening on 8082")
 	log.Fatal(http.ListenAndServe(":8082",
-		middleware.ContentTypeMiddleware(router)))
+		middleware.FileSizeLimit(middleware.ContentTypeMiddleware(router))))
 }
