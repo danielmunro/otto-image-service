@@ -11,6 +11,7 @@ package auth
 
 import (
 	"net/http"
+	"os"
 )
 
 // contextKeys are used to identify the type of value in the context.
@@ -62,7 +63,7 @@ type Configuration struct {
 // NewConfiguration returns a new Configuration object
 func NewConfiguration() *Configuration {
 	cfg := &Configuration{
-		BasePath:      "http://localhost:8080",
+		BasePath:      "http://" + os.Getenv("USER_SERVICE_HOST"),
 		DefaultHeader: make(map[string]string),
 		UserAgent:     "OpenAPI-Generator/1.0.0/go",
 	}
