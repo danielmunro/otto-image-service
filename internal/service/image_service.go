@@ -1,57 +1,69 @@
 package service
 
 import (
+	"context"
+	"encoding/json"
 	"github.com/danielmunro/otto-image-service/internal/db"
 	"github.com/danielmunro/otto-image-service/internal/entity"
+	kafka2 "github.com/danielmunro/otto-image-service/internal/kafka"
 	"github.com/danielmunro/otto-image-service/internal/mapper"
 	"github.com/danielmunro/otto-image-service/internal/model"
 	"github.com/danielmunro/otto-image-service/internal/repository"
 	"github.com/google/uuid"
+	"github.com/segmentio/kafka-go"
 	"log"
 	"os"
 )
 
 type ImageService struct {
 	imageRepository *repository.ImageRepository
+	albumRepository *repository.AlbumRepository
 	userRepository *repository.UserRepository
 	uploadService *UploadService
+	kafkaWriter *kafka.Writer
 }
 
 func CreateDefaultImageService() *ImageService {
 	conn := db.CreateDefaultConnection()
 	return CreateImageService(
 		repository.CreateImageRepository(conn),
+		repository.CreateAlbumRepository(conn),
 		repository.CreateUserRepository(conn),
-		CreateDefaultUploadService())
+		CreateDefaultUploadService(),
+		kafka2.CreateWriter(os.Getenv("KAFKA_HOST")))
 }
 
-func CreateImageService(imageRepository *repository.ImageRepository, userRepository *repository.UserRepository, uploadService *UploadService) *ImageService {
+func CreateImageService(imageRepository *repository.ImageRepository, albumRepository *repository.AlbumRepository, userRepository *repository.UserRepository, uploadService *UploadService, kafkaWriter *kafka.Writer) *ImageService {
 	return &ImageService{
 		imageRepository,
+		albumRepository,
 		userRepository,
 		uploadService,
+		kafkaWriter,
 	}
 }
 
-func (i *ImageService) CreateImage(userUuid uuid.UUID, image *os.File) *model.Image {
-	// imageEntity := mapper.GetImageEntityFromNewModel(image)
-	// i.imageRepository.Create(imageEntity)
-	// return mapper.GetImageModelFromEntity(imageEntity)
+func (i *ImageService) CreateNewProfileImage(userUuid uuid.UUID, image *os.File) *model.Image {
 	user, err := i.userRepository.FindOneByUuid(userUuid.String())
 	if err != nil {
 		log.Print("no user")
 		return nil
 	}
+	album := i.albumRepository.FindOrCreateProfileAlbumForUser(user)
 	imageUuid := uuid.New()
 	imageEntity := &entity.Image{
 		Filename: image.Name(),
 		User:     user,
 		UserID:   user.ID,
-		Album:    nil,
-		AlbumID:  0,
+		Album:    album,
+		AlbumID:  album.ID,
 		Uuid:     &imageUuid,
 	}
 	s3Key := i.uploadService.UploadImage(image)
 	imageEntity.S3Key = s3Key.String()
-	return mapper.GetImageModelFromEntity(imageEntity)
+	imageModel := mapper.GetImageModelFromEntity(imageEntity)
+	data, _ := json.Marshal(imageModel)
+	log.Print("publishing image to kafka: ", string(data))
+	_ = i.kafkaWriter.WriteMessages(context.Background(), kafka.Message{Value: data})
+	return imageModel
 }

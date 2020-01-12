@@ -10,14 +10,16 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/segmentio/kafka-go"
 	"log"
+	"os"
 	"time"
 )
 
 func main() {
 	_ = godotenv.Load()
-	log.Print("connecting to localhost:9092")
-	conn, err := kafka.DialLeader(context.Background(), "tcp", "localhost:9092", string(constants.Users), 0)
+	log.Print("connecting to kafka: ", os.Getenv("KAFKA_HOST"))
+	conn, err := kafka.DialLeader(context.Background(), "tcp", os.Getenv("KAFKA_HOST"), string(constants.Users), 0)
 	if err != nil {
+		log.Print("fail")
 		log.Fatal(err)
 	}
 	_ = conn.SetReadDeadline(time.Now().Add(10*time.Second))
