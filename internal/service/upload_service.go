@@ -33,7 +33,6 @@ func CreateDefaultUploadService() *UploadService {
 
 func (u *UploadService) UploadImage(file *os.File) (*uuid.UUID, error) {
 	log.Print("sanity UploadImage")
-	defer file.Close()
 	fileInfo, err := file.Stat()
 	if err != nil {
 		log.Print(err)
