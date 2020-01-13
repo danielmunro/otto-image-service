@@ -43,11 +43,11 @@ func CreateImageService(imageRepository *repository.ImageRepository, albumReposi
 	}
 }
 
-func (i *ImageService) CreateNewProfileImage(userUuid uuid.UUID, image *os.File) *model.Image {
+func (i *ImageService) CreateNewProfileImage(userUuid uuid.UUID, image *os.File) (*model.Image, error) {
 	user, err := i.userRepository.FindOneByUuid(userUuid.String())
 	if err != nil {
 		log.Print("no user")
-		return nil
+		return nil, err
 	}
 	album := i.albumRepository.FindOrCreateProfileAlbumForUser(user)
 	imageUuid := uuid.New()
@@ -59,11 +59,15 @@ func (i *ImageService) CreateNewProfileImage(userUuid uuid.UUID, image *os.File)
 		AlbumID:  album.ID,
 		Uuid:     &imageUuid,
 	}
-	s3Key := i.uploadService.UploadImage(image)
+	s3Key, err := i.uploadService.UploadImage(image)
+	if err != nil {
+		log.Print("error occurred in image service upload", err)
+		return nil, err
+	}
 	imageEntity.S3Key = s3Key.String()
 	imageModel := mapper.GetImageModelFromEntity(imageEntity)
 	data, _ := json.Marshal(imageModel)
 	log.Print("publishing image to kafka: ", string(data))
 	_ = i.kafkaWriter.WriteMessages(context.Background(), kafka.Message{Value: data})
-	return imageModel
+	return imageModel, nil
 }

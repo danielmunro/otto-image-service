@@ -16,7 +16,10 @@ func UploadNewProfilePicV1(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			return nil, err
 		}
-		image := service.CreateDefaultImageService().CreateNewProfileImage(userUuid, tempFile)
+		image, err := service.CreateDefaultImageService().CreateNewProfileImage(userUuid, tempFile)
+		if err != nil {
+			return nil, err
+		}
 		data, err := json.Marshal(image)
 		if err == nil {
 			_, _ = w.Write(data)

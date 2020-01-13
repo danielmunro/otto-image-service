@@ -31,15 +31,19 @@ func CreateDefaultUploadService() *UploadService {
 	return CreateUploadService(s3.New(s), os.Getenv("S3_BUCKET"))
 }
 
-func (u *UploadService) UploadImage(file *os.File) uuid.UUID {
+func (u *UploadService) UploadImage(file *os.File) (*uuid.UUID, error) {
 	log.Print("sanity UploadImage")
 	defer file.Close()
-	fileInfo, _ := file.Stat()
+	fileInfo, err := file.Stat()
+	if err != nil {
+		log.Print(err)
+		return nil, err
+	}
 	var size = fileInfo.Size()
 	buffer := make([]byte, size)
 	_, _ = file.Read(buffer)
 	key := uuid.New()
-	_, err := u.s3Client.PutObject(&s3.PutObjectInput{
+	_, err = u.s3Client.PutObject(&s3.PutObjectInput{
 		Bucket: aws.String(u.bucket),
 		Key: aws.String(key.String()),
 		ACL: aws.String("private"),
@@ -50,7 +54,7 @@ func (u *UploadService) UploadImage(file *os.File) uuid.UUID {
 		ServerSideEncryption: aws.String("AES256"),
 	})
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 	}
-	return key
+	return &key, nil
 }
