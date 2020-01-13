@@ -69,5 +69,6 @@ func (i *ImageService) CreateNewProfileImage(userUuid uuid.UUID, image *os.File)
 	data, _ := json.Marshal(imageModel)
 	log.Print("publishing image to kafka: ", string(data))
 	_ = i.kafkaWriter.WriteMessages(context.Background(), kafka.Message{Value: data})
+	image.Close()
 	return imageModel, nil
 }

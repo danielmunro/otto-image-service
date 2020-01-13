@@ -16,7 +16,6 @@ func StoreUploadedFile(r *http.Request) (*os.File, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer tempFile.Close()
 	fileBytes, err := ioutil.ReadAll(file)
 	if err != nil {
 		return nil, err
