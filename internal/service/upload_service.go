@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 )
 
 type UploadService struct {
@@ -31,21 +32,21 @@ func CreateDefaultUploadService() *UploadService {
 	return CreateUploadService(s3.New(s), os.Getenv("S3_BUCKET"))
 }
 
-func (u *UploadService) UploadImage(file *os.File) (*uuid.UUID, error) {
+func (u *UploadService) UploadImage(file *os.File) (string, error) {
 	log.Print("sanity UploadImage")
 	fileInfo, err := file.Stat()
 	if err != nil {
 		log.Print(err)
-		return nil, err
+		return "", err
 	}
 	var size = fileInfo.Size()
 	buffer := make([]byte, size)
 	_, _ = file.Read(buffer)
-	key := uuid.New()
+	s3Key := uuid.New().String() + "-" + filepath.Ext(file.Name())
 	_, err = u.s3Client.PutObject(&s3.PutObjectInput{
 		Bucket: aws.String(u.bucket),
-		Key: aws.String(key.String()),
-		ACL: aws.String("private"),
+		Key: aws.String(s3Key),
+		ACL: aws.String("public-read"),
 		Body: bytes.NewReader(buffer),
 		ContentLength: aws.Int64(size),
 		ContentType: aws.String(http.DetectContentType(buffer)),
@@ -55,5 +56,5 @@ func (u *UploadService) UploadImage(file *os.File) (*uuid.UUID, error) {
 	if err != nil {
 		log.Print(err)
 	}
-	return &key, nil
+	return s3Key, nil
 }

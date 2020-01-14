@@ -64,7 +64,7 @@ func (i *ImageService) CreateNewProfileImage(userUuid uuid.UUID, image *os.File)
 		log.Print("error occurred in image service upload", err)
 		return nil, err
 	}
-	imageEntity.S3Key = s3Key.String()
+	imageEntity.S3Key = s3Key
 	i.imageRepository.Create(imageEntity)
 	imageModel := mapper.GetImageModelFromEntity(imageEntity)
 	data, _ := json.Marshal(imageModel)
