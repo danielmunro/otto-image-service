@@ -13,3 +13,9 @@ func GetUserEntityFromModel(user *model.User) *entity.User {
 		Username:   user.Username,
 	}
 }
+
+func GetUserModelFromEntity(user *entity.User) model.User {
+	return model.User{
+		Uuid: user.Uuid.String(),
+	}
+}

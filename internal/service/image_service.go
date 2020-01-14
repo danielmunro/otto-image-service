@@ -65,6 +65,7 @@ func (i *ImageService) CreateNewProfileImage(userUuid uuid.UUID, image *os.File)
 		return nil, err
 	}
 	imageEntity.S3Key = s3Key.String()
+	i.imageRepository.Create(imageEntity)
 	imageModel := mapper.GetImageModelFromEntity(imageEntity)
 	data, _ := json.Marshal(imageModel)
 	log.Print("publishing image to kafka: ", string(data))
