@@ -6,5 +6,5 @@ import (
 )
 
 func Test_Can_UploadImage(t *testing.T) {
-	uploadService := service.CreateDefaultUploadService()
+	service.CreateDefaultUploadService()
 }
