@@ -60,12 +60,12 @@ spec:
           - name: S3_REGION
             valueFrom:
               secretKeyRef:
-                name: image_service
+                name: image-service
                 key: s3_region
           - name: S3_BUCKET
             valueFrom:
               secretKeyRef:
-                name: image_service
+                name: image-service
                 key: s3_bucket
       imagePullSecrets:
       - name: dockerconfigjson-github-com
