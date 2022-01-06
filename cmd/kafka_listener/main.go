@@ -15,8 +15,9 @@ import (
 
 func main() {
 	_ = godotenv.Load()
-	log.Print("connecting to kafka: ", "kafka:9092")
-	conn, err := kafka.DialLeader(context.Background(), "tcp", "kafka:9092", string(constants.Users), 0)
+	kafkaHost := os.Getenv("KAFKA_HOST")
+	log.Print("connecting to kafka :: ", kafkaHost)
+	conn, err := kafka.DialLeader(context.Background(), "tcp", kafkaHost, string(constants.Users), 0)
 	if err != nil {
 		log.Print("fail")
 		log.Fatal(err)

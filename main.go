@@ -24,7 +24,7 @@ func main() {
 }
 
 func readKafka() {
-	kafkaHost := "kafka"
+	kafkaHost := os.Getenv("KAFKA_HOST")
 	log.Print("connecting to kafka", kafkaHost)
 	kafka.InitializeAndRunLoop(kafkaHost)
 	log.Print("exit kafka loop")

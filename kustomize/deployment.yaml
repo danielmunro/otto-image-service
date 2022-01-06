@@ -57,6 +57,11 @@ spec:
               secretKeyRef:
                 name: postgres
                 key: port
+          - name: KAFKA_HOST
+            valueFrom:
+              secretKeyRef:
+                name: kafka
+                key: host
           - name: S3_REGION
             valueFrom:
               secretKeyRef:
