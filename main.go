@@ -16,7 +16,6 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 	"log"
 	"net/http"
-	"os"
 )
 
 func main() {

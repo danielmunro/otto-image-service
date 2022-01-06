@@ -11,7 +11,6 @@ package auth
 
 import (
 	"net/http"
-	"os"
 )
 
 // contextKeys are used to identify the type of value in the context.
