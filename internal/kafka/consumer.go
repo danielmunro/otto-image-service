@@ -15,7 +15,7 @@ func InitializeAndRunLoop(kafkaHost string) {
 	userRepository := repository.CreateUserRepository(db.CreateDefaultConnection())
 	err := loopKafkaReader(userRepository, reader)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("exited kafka loop due to error :: ", err)
 	}
 }
 
@@ -24,7 +24,7 @@ func loopKafkaReader(userRepository *repository.UserRepository, reader *kafka.Re
 		log.Print("listening for kafka messages")
 		data, err := reader.ReadMessage(context.Background())
 		if err != nil  {
-			log.Print(err)
+			log.Print("error reading kafka messages :: ", err)
 			return nil
 		}
 		log.Print("consuming user message ", string(data.Value))
