@@ -10,6 +10,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/segmentio/kafka-go"
 	"log"
+	"os"
 	"time"
 )
 

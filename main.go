@@ -15,6 +15,7 @@ import (
 	"github.com/danielmunro/otto-image-service/internal/middleware"
 	_ "github.com/joho/godotenv/autoload"
 	"log"
+	"os"
 	"net/http"
 )
 
