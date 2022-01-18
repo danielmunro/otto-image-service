@@ -40,28 +40,53 @@ spec:
           - name: POSTGRES_HOST
             valueFrom:
               secretKeyRef:
-                name: postgres
+                name: postgres-image
                 key: host
           - name: POSTGRES_USER
             valueFrom:
               secretKeyRef:
-                name: postgres
+                name: postgres-image
                 key: user
           - name: POSTGRES_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: postgres
+                name: postgres-image
                 key: password
           - name: POSTGRES_PORT
             valueFrom:
               secretKeyRef:
-                name: postgres
+                name: postgres-image
                 key: port
-          - name: KAFKA_HOST
+          - name: POSTGRES_DBNAME
+            valueFrom:
+              secretKeyRef:
+                name: postgres-image
+                key: database
+          - name: KAFKA_BOOTSTRAP_SERVERS
             valueFrom:
               secretKeyRef:
                 name: kafka
-                key: host
+                key: bootstrap_servers
+          - name: KAFKA_SECURITY_PROTOCOL
+            valueFrom:
+              secretKeyRef:
+                name: kafka
+                key: security_protocol
+          - name: KAFKA_SASL_MECHANISM
+            valueFrom:
+              secretKeyRef:
+                name: kafka
+                key: sasl_mechanism
+          - name: KAFKA_SASL_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: kafka
+                key: sasl_username
+          - name: KAFKA_SASL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: kafka
+                key: sasl_password
           - name: S3_REGION
             valueFrom:
               secretKeyRef:
@@ -74,4 +99,6 @@ spec:
                 key: s3_bucket
       imagePullSecrets:
       - name: dockerconfigjson-github-com
-      - name: postgres
+      - name: postgres-image
+      - name: kafka
+      - name: image-service
