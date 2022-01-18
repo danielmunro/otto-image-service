@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func CreateWriter() *kafka.Producer {
+func CreateProducer() *kafka.Producer {
 	producer, err := kafka.NewProducer(&kafka.ConfigMap{
 		"bootstrap.servers": os.Getenv("KAFKA_BOOTSTRAP_SERVERS"),
 		"security.protocol": os.Getenv("KAFKA_SECURITY_PROTOCOL"),

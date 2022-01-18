@@ -1,8 +1,8 @@
 package service
 
 import (
-	"context"
 	"encoding/json"
+	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/danielmunro/otto-image-service/internal/db"
 	"github.com/danielmunro/otto-image-service/internal/entity"
 	kafka2 "github.com/danielmunro/otto-image-service/internal/kafka"
@@ -10,7 +10,6 @@ import (
 	"github.com/danielmunro/otto-image-service/internal/model"
 	"github.com/danielmunro/otto-image-service/internal/repository"
 	"github.com/google/uuid"
-	"github.com/segmentio/kafka-go"
 	"log"
 	"os"
 )
@@ -18,9 +17,9 @@ import (
 type ImageService struct {
 	imageRepository *repository.ImageRepository
 	albumRepository *repository.AlbumRepository
-	userRepository *repository.UserRepository
-	uploadService *UploadService
-	kafkaWriter *kafka.Writer
+	userRepository  *repository.UserRepository
+	uploadService   *UploadService
+	kafkaWriter     *kafka.Producer
 }
 
 func CreateDefaultImageService() *ImageService {
@@ -30,16 +29,16 @@ func CreateDefaultImageService() *ImageService {
 		repository.CreateAlbumRepository(conn),
 		repository.CreateUserRepository(conn),
 		CreateDefaultUploadService(),
-		kafka2.CreateWriter(os.Getenv("KAFKA_HOST")))
+		kafka2.CreateProducer())
 }
 
-func CreateImageService(imageRepository *repository.ImageRepository, albumRepository *repository.AlbumRepository, userRepository *repository.UserRepository, uploadService *UploadService, kafkaWriter *kafka.Writer) *ImageService {
+func CreateImageService(imageRepository *repository.ImageRepository, albumRepository *repository.AlbumRepository, userRepository *repository.UserRepository, uploadService *UploadService, kafkaProducer *kafka.Producer) *ImageService {
 	return &ImageService{
 		imageRepository,
 		albumRepository,
 		userRepository,
 		uploadService,
-		kafkaWriter,
+		kafkaProducer,
 	}
 }
 
@@ -69,7 +68,14 @@ func (i *ImageService) CreateNewProfileImage(userUuid uuid.UUID, image *os.File)
 	imageModel := mapper.GetImageModelFromEntity(imageEntity)
 	data, _ := json.Marshal(imageModel)
 	log.Print("publishing image to kafka: ", string(data))
-	_ = i.kafkaWriter.WriteMessages(context.Background(), kafka.Message{Value: data})
+	topic := "images"
+	_ = i.kafkaWriter.Produce(
+		&kafka.Message{
+			Value: data,
+			TopicPartition: kafka.TopicPartition{Topic: &topic,
+				Partition: kafka.PartitionAny},
+		},
+		nil)
 	image.Close()
 	return imageModel, nil
 }

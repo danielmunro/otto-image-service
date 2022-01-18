@@ -15,7 +15,6 @@ import (
 	"github.com/danielmunro/otto-image-service/internal/middleware"
 	_ "github.com/joho/godotenv/autoload"
 	"log"
-	"os"
 	"net/http"
 )
 
@@ -25,9 +24,8 @@ func main() {
 }
 
 func readKafka() {
-	kafkaHost := os.Getenv("KAFKA_HOST")
-	log.Print("connecting to kafka", kafkaHost)
-	kafka.InitializeAndRunLoop(kafkaHost)
+	log.Print("connecting to kafka")
+	kafka.InitializeAndRunLoop()
 	log.Print("exit kafka loop")
 }
 
