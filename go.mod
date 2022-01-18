@@ -5,6 +5,7 @@ go 1.13
 require (
 	github.com/antihax/optional v1.0.0
 	github.com/aws/aws-sdk-go v1.42.28
+	github.com/confluentinc/confluent-kafka-go v1.8.2 // indirect
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/sessions v1.2.1

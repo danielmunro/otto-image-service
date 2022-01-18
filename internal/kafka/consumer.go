@@ -1,17 +1,16 @@
 package kafka
 
 import (
-	"context"
+	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/danielmunro/otto-image-service/internal/db"
 	"github.com/danielmunro/otto-image-service/internal/mapper"
 	"github.com/danielmunro/otto-image-service/internal/model"
 	"github.com/danielmunro/otto-image-service/internal/repository"
-	"github.com/segmentio/kafka-go"
 	"log"
 )
 
-func InitializeAndRunLoop(kafkaHost string) {
-	reader := GetReader(kafkaHost)
+func InitializeAndRunLoop() {
+	reader := GetReader()
 	userRepository := repository.CreateUserRepository(db.CreateDefaultConnection())
 	err := loopKafkaReader(userRepository, reader)
 	if err != nil {
@@ -19,11 +18,11 @@ func InitializeAndRunLoop(kafkaHost string) {
 	}
 }
 
-func loopKafkaReader(userRepository *repository.UserRepository, reader *kafka.Reader) error {
+func loopKafkaReader(userRepository *repository.UserRepository, reader *kafka.Consumer) error {
 	for {
 		log.Print("listening for kafka messages")
-		data, err := reader.ReadMessage(context.Background())
-		if err != nil  {
+		data, err := reader.ReadMessage(-1)
+		if err != nil {
 			log.Print("error reading kafka messages :: ", err)
 			return nil
 		}

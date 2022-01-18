@@ -1,14 +1,21 @@
 package kafka
 
 import (
-	"github.com/danielmunro/otto-image-service/internal/constants"
-	"github.com/segmentio/kafka-go"
+	"fmt"
+	"github.com/confluentinc/confluent-kafka-go/kafka"
+	"os"
 )
 
-func CreateWriter(kafkaHost string) *kafka.Writer {
-	return kafka.NewWriter(kafka.WriterConfig{
-		Brokers: []string{kafkaHost},
-		Topic: string(constants.Images),
-		Balancer: &kafka.LeastBytes{},
+func CreateWriter() *kafka.Producer {
+	producer, err := kafka.NewProducer(&kafka.ConfigMap{
+		"bootstrap.servers": os.Getenv("KAFKA_BOOTSTRAP_SERVERS"),
+		"security.protocol": os.Getenv("KAFKA_SECURITY_PROTOCOL"),
+		"sasl.mechanisms":   os.Getenv("KAFKA_SASL_MECHANISM"),
+		"sasl.username":     os.Getenv("KAFKA_SASL_USERNAME"),
+		"sasl.password":     os.Getenv("KAFKA_SASL_PASSWORD"),
 	})
+	if err != nil {
+		panic(fmt.Sprintf("Failed to create producer: %s", err))
+	}
+	return producer
 }

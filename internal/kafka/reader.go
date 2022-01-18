@@ -1,20 +1,25 @@
 package kafka
 
 import (
-	"github.com/danielmunro/otto-image-service/internal/constants"
-	"github.com/segmentio/kafka-go"
-	"log"
+	"github.com/confluentinc/confluent-kafka-go/kafka"
+	"os"
 )
 
-func GetReader(broker string) *kafka.Reader {
-    log.Print("kafka reader broker :: ", broker)
-	r := kafka.NewReader(kafka.ReaderConfig{
-		Brokers:   []string{broker},
-		Topic:     string(constants.Users),
-		GroupID: "image_service",
-		Partition: 0,
-		MinBytes:  10e3, // 10KB
-		MaxBytes:  10e6, // 10MB
+func GetReader() *kafka.Consumer {
+	c, err := kafka.NewConsumer(&kafka.ConfigMap{
+		"bootstrap.servers": os.Getenv("KAFKA_BOOTSTRAP_SERVERS"),
+		"security.protocol": os.Getenv("KAFKA_SECURITY_PROTOCOL"),
+		"sasl.mechanisms":   os.Getenv("KAFKA_SASL_MECHANISM"),
+		"sasl.username":     os.Getenv("KAFKA_SASL_USERNAME"),
+		"sasl.password":     os.Getenv("KAFKA_SASL_PASSWORD"),
+		"group.id":          "otto",
+		"auto.offset.reset": "earliest",
 	})
-	return r
+
+	if err != nil {
+		panic(err)
+	}
+
+	c.SubscribeTopics([]string{"images"}, nil)
+	return c
 }
