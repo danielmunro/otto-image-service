@@ -20,6 +20,6 @@ func GetReader() *kafka.Consumer {
 		panic(err)
 	}
 
-	c.SubscribeTopics([]string{"images"}, nil)
+	c.SubscribeTopics([]string{"users"}, nil)
 	return c
 }
