@@ -12,18 +12,19 @@ import (
 	"github.com/danielmunro/otto-image-service/internal/util"
 	"github.com/google/uuid"
 	"github.com/gorilla/sessions"
+	"log"
 	"net/http"
 )
 
 type AuthService struct {
-	client *auth.APIClient
-	cookieStore *sessions.CookieStore
+	client         *auth.APIClient
+	cookieStore    *sessions.CookieStore
 	userRepository *repository.UserRepository
 }
 
 func CreateDefaultAuthService() *AuthService {
 	return &AuthService{
-		client: auth.NewAPIClient(auth.NewConfiguration()),
+		client:         auth.NewAPIClient(auth.NewConfiguration()),
 		userRepository: repository.CreateUserRepository(db.CreateDefaultConnection()),
 	}
 }
@@ -52,8 +53,11 @@ func (a *AuthService) DoWithValidSessionAndUser(w http.ResponseWriter, r *http.R
 		_, _ = w.Write([]byte("missing required header: x-session-token"))
 		return
 	}
-	session, err := a.GetSession(sessionToken)
-	if err != nil || userUuid.String() != session.User.Uuid {
+	session, err := a.getSession(sessionToken)
+	if err == nil {
+		log.Print("session validation succeeded, sessionUuid: ", session.User.Uuid)
+	} else {
+		log.Print("FAILED! Either error, or Uuid mismatch :: ", err)
 		err := errors.New("invalid session")
 		w.WriteHeader(http.StatusForbidden)
 		_, _ = w.Write([]byte(err.Error()))
@@ -61,6 +65,18 @@ func (a *AuthService) DoWithValidSessionAndUser(w http.ResponseWriter, r *http.R
 	}
 	object, err := doAction()
 	util.WriteResponse(w, object, err)
+}
+
+func (a *AuthService) getSession(sessionId string) (*model.Session, error) {
+	ctx := context.TODO()
+	response, _ := a.client.DefaultApi.GetSession(ctx, &auth.GetSessionOpts{
+		Token: optional.NewString(sessionId),
+	})
+	if response == nil || response.StatusCode != http.StatusOK {
+		return nil, errors.New("no session found")
+	}
+	session := DecodeRequestToNewSession(response)
+	return session, nil
 }
 
 func DecodeRequestToNewSession(r *http.Response) *model.Session {
