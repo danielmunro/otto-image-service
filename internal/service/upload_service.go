@@ -7,14 +7,13 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/google/uuid"
 	"log"
-	"net/http"
 	"os"
 	"path/filepath"
 )
 
 type UploadService struct {
 	s3Client *s3.S3
-	bucket string
+	bucket   string
 }
 
 func CreateUploadService(s3Client *s3.S3, bucket string) *UploadService {
@@ -33,7 +32,8 @@ func CreateDefaultUploadService() *UploadService {
 }
 
 func (u *UploadService) UploadImage(file *os.File) (string, error) {
-	log.Print("sanity UploadImage")
+	log.Print("sanity UploadImage file name :: ", file.Name())
+	//log.Print("sanity UploadImage file ext :: ", filepath.Ext(file.()))
 	fileInfo, err := file.Stat()
 	if err != nil {
 		log.Print(err)
@@ -44,17 +44,28 @@ func (u *UploadService) UploadImage(file *os.File) (string, error) {
 	_, _ = file.Read(buffer)
 	s3Key := uuid.New().String() + "-" + filepath.Ext(file.Name())
 	_, err = u.s3Client.PutObject(&s3.PutObjectInput{
-		Bucket: aws.String(u.bucket),
-		Key: aws.String(s3Key),
-		ACL: aws.String("public-read"),
-		Body: bytes.NewReader(buffer),
-		ContentLength: aws.Int64(size),
-		ContentType: aws.String(http.DetectContentType(buffer)),
-		ContentDisposition: aws.String("attachment"),
+		Bucket:               aws.String(u.bucket),
+		Key:                  aws.String(s3Key),
+		ACL:                  aws.String("public-read"),
+		Body:                 bytes.NewReader(buffer),
+		ContentLength:        aws.Int64(size),
+		ContentType:          aws.String(getContentType(file.Name())),
+		ContentDisposition:   aws.String("attachment"),
 		ServerSideEncryption: aws.String("AES256"),
 	})
 	if err != nil {
 		log.Print(err)
 	}
 	return s3Key, nil
+}
+
+func getContentType(file string) string {
+	ext := filepath.Ext(file)
+	if ext == "png" {
+		return "image/png"
+	} else if ext == "jpg" || ext == "jpeg" {
+		return "image/jpeg"
+	} else {
+		return "application/octet-stream"
+	}
 }
