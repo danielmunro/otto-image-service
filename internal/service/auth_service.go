@@ -69,9 +69,11 @@ func (a *AuthService) DoWithValidSessionAndUser(w http.ResponseWriter, r *http.R
 
 func (a *AuthService) getSession(sessionId string) (*model.Session, error) {
 	ctx := context.TODO()
-	response, _ := a.client.DefaultApi.GetSession(ctx, &auth.GetSessionOpts{
+	response, err := a.client.DefaultApi.GetSession(ctx, &auth.GetSessionOpts{
 		Token: optional.NewString(sessionId),
 	})
+	log.Print("auth response :: ", response)
+	log.Print("error :: ", err)
 	if response == nil || response.StatusCode != http.StatusOK {
 		return nil, errors.New("no session found")
 	}
