@@ -61,11 +61,9 @@ func (u *UploadService) UploadImage(file *os.File) (string, error) {
 
 func getContentType(file string) string {
 	ext := filepath.Ext(file)
-	log.Print("get content type debug filename :: ", file)
-	log.Print("get content type debug ext :: ", ext)
-	if ext == "png" {
+	if ext == ".png" {
 		return "image/png"
-	} else if ext == "jpg" || ext == "jpeg" {
+	} else if ext == ".jpg" || ext == ".jpeg" {
 		return "image/jpeg"
 	} else {
 		return "application/octet-stream"
