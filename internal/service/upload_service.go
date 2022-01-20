@@ -42,7 +42,7 @@ func (u *UploadService) UploadImage(file *os.File) (string, error) {
 	var size = fileInfo.Size()
 	buffer := make([]byte, size)
 	_, _ = file.Read(buffer)
-	s3Key := uuid.New().String() + "-" + filepath.Ext(file.Name())
+	s3Key := uuid.New().String() + filepath.Ext(file.Name())
 	_, err = u.s3Client.PutObject(&s3.PutObjectInput{
 		Bucket:               aws.String(u.bucket),
 		Key:                  aws.String(s3Key),

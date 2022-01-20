@@ -16,7 +16,7 @@ func StoreUploadedFile(r *http.Request) (*os.File, error) {
 	}
 	defer file.Close()
 	ext := filepath.Ext(handler.Filename)
-	tempFile, err := ioutil.TempFile("/tmp", "upload-*."+ext)
+	tempFile, err := ioutil.TempFile("/tmp", "upload-*"+ext)
 	if err != nil {
 		return nil, err
 	}
