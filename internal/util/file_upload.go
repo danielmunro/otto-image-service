@@ -5,16 +5,18 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 )
 
 func StoreUploadedFile(r *http.Request) (*os.File, error) {
-	file, _, err := r.FormFile("image")
+	file, handler, err := r.FormFile("image")
 	if err != nil {
 		log.Print("error accessing form image :: ", err)
 		return nil, err
 	}
 	defer file.Close()
-	tempFile, err := ioutil.TempFile("/tmp", "upload-*")
+	ext := filepath.Ext(handler.Filename)
+	tempFile, err := ioutil.TempFile("/tmp", "upload-*."+ext)
 	if err != nil {
 		return nil, err
 	}
