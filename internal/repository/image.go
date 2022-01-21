@@ -19,8 +19,8 @@ func (i *ImageRepository) Create(image *entity.Image) {
 	i.conn.Create(image)
 }
 
-func (i *ImageRepository) Update(image *entity.Image) {
-	i.conn.Update(image)
+func (i *ImageRepository) Save(image *entity.Image) {
+	i.conn.Save(image)
 }
 
 func (i *ImageRepository) FindByUserAndAlbum(userUuid *uuid.UUID, albumUuid *uuid.UUID) *entity.Image {
@@ -28,8 +28,8 @@ func (i *ImageRepository) FindByUserAndAlbum(userUuid *uuid.UUID, albumUuid *uui
 	log.Print("find or create album, debug album uuid :: ", albumUuid)
 	image := &entity.Image{}
 	i.conn.Preload("Album").
-		Joins("join users on users.id = albums.user_id").
-		Where("user_uuid = ? and uuid = ?", userUuid.String(), albumUuid.String()).
+		Joins("join users on users.id = albums.user_id and users.uuid = ?", userUuid.String()).
+		Where("uuid = ?", albumUuid.String()).
 		Find(&image)
 	return image
 }
