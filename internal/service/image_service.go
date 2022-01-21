@@ -11,7 +11,7 @@ import (
 	"github.com/danielmunro/otto-image-service/internal/repository"
 	"github.com/google/uuid"
 	"log"
-	"os"
+	"mime/multipart"
 )
 
 type ImageService struct {
@@ -42,7 +42,7 @@ func CreateImageService(imageRepository *repository.ImageRepository, albumReposi
 	}
 }
 
-func (i *ImageService) CreateNewProfileImage(userUuid uuid.UUID, image *os.File) (*model.Image, error) {
+func (i *ImageService) CreateNewProfileImage(userUuid uuid.UUID, file multipart.File, fileHeader *multipart.FileHeader) (*model.Image, error) {
 	user, err := i.userRepository.FindOneByUuid(userUuid.String())
 	if err != nil {
 		log.Print("no user")
@@ -51,14 +51,14 @@ func (i *ImageService) CreateNewProfileImage(userUuid uuid.UUID, image *os.File)
 	album := i.albumRepository.FindOrCreateProfileAlbumForUser(user)
 	imageUuid := uuid.New()
 	imageEntity := &entity.Image{
-		Filename: image.Name(),
+		Filename: "",
 		User:     user,
 		UserID:   user.ID,
 		Album:    album,
 		AlbumID:  album.ID,
 		Uuid:     &imageUuid,
 	}
-	s3Key, err := i.uploadService.UploadImage(image)
+	s3Key, err := i.uploadService.UploadImage(file, fileHeader)
 	if err != nil {
 		log.Print("error occurred in image service upload", err)
 		return nil, err
@@ -76,6 +76,5 @@ func (i *ImageService) CreateNewProfileImage(userUuid uuid.UUID, image *os.File)
 				Partition: kafka.PartitionAny},
 		},
 		nil)
-	image.Close()
 	return imageModel, nil
 }

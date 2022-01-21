@@ -3,7 +3,6 @@ package controller
 import (
 	"encoding/json"
 	"github.com/danielmunro/otto-image-service/internal/service"
-	"github.com/danielmunro/otto-image-service/internal/util"
 	"github.com/danielmunro/otto-image-service/internal/uuid"
 	"net/http"
 )
@@ -12,11 +11,12 @@ import (
 func UploadNewProfilePicV1(w http.ResponseWriter, r *http.Request) {
 	userUuid := uuid.GetUuidFromPathSecondPosition(r.URL.Path)
 	service.CreateDefaultAuthService().DoWithValidSessionAndUser(w, r, userUuid, func() (interface{}, error) {
-		tempFile, err := util.StoreUploadedFile(r)
+		//tempFile, err := util.StoreUploadedFile(r)
+		tempFile, fileHeader, err := r.FormFile("image")
 		if err != nil {
 			return nil, err
 		}
-		image, err := service.CreateDefaultImageService().CreateNewProfileImage(userUuid, tempFile)
+		image, err := service.CreateDefaultImageService().CreateNewProfileImage(userUuid, tempFile, fileHeader)
 		if err != nil {
 			return nil, err
 		}
