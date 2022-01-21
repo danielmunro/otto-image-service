@@ -7,7 +7,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/google/uuid"
 	"log"
-	"net/http"
 	"os"
 	"path/filepath"
 )
@@ -50,7 +49,7 @@ func (u *UploadService) UploadImage(file *os.File) (string, error) {
 		ACL:                  aws.String("public-read"),
 		Body:                 bytes.NewReader(buffer),
 		ContentLength:        aws.Int64(size),
-		ContentType:          aws.String(http.DetectContentType(buffer)),
+		ContentType:          aws.String(getContentType(file.Name())),
 		ContentDisposition:   aws.String("attachment"),
 		ServerSideEncryption: aws.String("AES256"),
 	})
