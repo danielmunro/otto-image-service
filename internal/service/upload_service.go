@@ -7,6 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/google/uuid"
 	"log"
+	"net/http"
 	"os"
 	"path/filepath"
 )
@@ -36,18 +37,22 @@ func (u *UploadService) UploadImage(file *os.File) (string, error) {
 	//log.Print("sanity UploadImage file ext :: ", filepath.Ext(file.()))
 	fileInfo, err := file.Stat()
 	if err != nil {
-		log.Print(err)
+		log.Print("error file stat :: ", err)
 		return "", err
 	}
-	var size = fileInfo.Size()
+	size := fileInfo.Size()
 	buffer := make([]byte, size)
 	_, _ = file.Read(buffer)
 	s3Key := uuid.New().String() + filepath.Ext(file.Name())
 	_, err = u.s3Client.PutObject(&s3.PutObjectInput{
-		Bucket: aws.String(u.bucket),
-		Key:    aws.String(s3Key),
-		ACL:    aws.String("public-read"),
-		Body:   bytes.NewReader(buffer),
+		Bucket:               aws.String(u.bucket),
+		Key:                  aws.String(s3Key),
+		ACL:                  aws.String("public-read"),
+		Body:                 bytes.NewReader(buffer),
+		ContentLength:        aws.Int64(size),
+		ContentType:          aws.String(http.DetectContentType(buffer)),
+		ContentDisposition:   aws.String("attachment"),
+		ServerSideEncryption: aws.String("AES256"),
 	})
 	if err != nil {
 		log.Print(err)
