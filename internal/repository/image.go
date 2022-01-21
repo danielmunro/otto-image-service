@@ -4,6 +4,7 @@ import (
 	"github.com/danielmunro/otto-image-service/internal/entity"
 	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
+	"log"
 )
 
 type ImageRepository struct {
@@ -23,6 +24,8 @@ func (i *ImageRepository) Update(image *entity.Image) {
 }
 
 func (i *ImageRepository) FindByUserAndAlbum(userUuid *uuid.UUID, albumUuid *uuid.UUID) *entity.Image {
+	log.Print("find or create album, debug user uuid :: ", userUuid)
+	log.Print("find or create album, debug album uuid :: ", albumUuid)
 	image := &entity.Image{}
 	i.conn.Preload("Album").
 		Joins("join users on users.id = albums.user_id").

@@ -21,7 +21,7 @@ func (a *AlbumRepository) Create(album *entity.Album) {
 func (a *AlbumRepository) FindOrCreateProfileAlbumForUser(user *entity.User) *entity.Album {
 	album := &entity.Album{}
 	a.conn.Where("user_id = ? AND album_type = ?", user.ID, model.PROFILE_PICS).Scan(&album)
-	if album == nil {
+	if album.Uuid == nil {
 		album = &entity.Album{
 			Link:        user.Username,
 			AlbumType:   string(model.PROFILE_PICS),
