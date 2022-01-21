@@ -1,6 +1,7 @@
 package service
 
 import (
+	"bytes"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
@@ -34,12 +35,14 @@ func CreateDefaultUploadService() *UploadService {
 func (u *UploadService) UploadImage(file multipart.File, fileHeader *multipart.FileHeader) (string, error) {
 	log.Print("sanity UploadImage file name :: ", fileHeader.Filename)
 	size := fileHeader.Size
+	buffer := make([]byte, size)
+	file.Read(buffer)
 	s3Key := uuid.New().String() + filepath.Ext(fileHeader.Filename)
 	_, err := u.s3Client.PutObject(&s3.PutObjectInput{
 		Bucket:               aws.String(u.bucket),
 		Key:                  aws.String(s3Key),
 		ACL:                  aws.String("public-read"),
-		Body:                 file,
+		Body:                 bytes.NewReader(buffer),
 		ContentLength:        aws.Int64(size),
 		ContentType:          aws.String(getContentType(fileHeader.Filename)),
 		ServerSideEncryption: aws.String("AES256"),
