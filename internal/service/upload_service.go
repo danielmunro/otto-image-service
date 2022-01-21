@@ -44,14 +44,10 @@ func (u *UploadService) UploadImage(file *os.File) (string, error) {
 	_, _ = file.Read(buffer)
 	s3Key := uuid.New().String() + filepath.Ext(file.Name())
 	_, err = u.s3Client.PutObject(&s3.PutObjectInput{
-		Bucket:               aws.String(u.bucket),
-		Key:                  aws.String(s3Key),
-		ACL:                  aws.String("public-read"),
-		Body:                 bytes.NewReader(buffer),
-		ContentLength:        aws.Int64(size),
-		ContentType:          aws.String(getContentType(file.Name())),
-		ContentDisposition:   aws.String("attachment"),
-		ServerSideEncryption: aws.String("AES256"),
+		Bucket: aws.String(u.bucket),
+		Key:    aws.String(s3Key),
+		ACL:    aws.String("public-read"),
+		Body:   bytes.NewReader(buffer),
 	})
 	if err != nil {
 		log.Print(err)
