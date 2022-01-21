@@ -32,13 +32,13 @@ func CreateDefaultUploadService() *UploadService {
 	return CreateUploadService(s3.New(s), os.Getenv("S3_BUCKET"))
 }
 
-func (u *UploadService) UploadImage(file multipart.File, fileHeader *multipart.FileHeader) (string, error) {
-	log.Print("sanity UploadImage file name :: ", fileHeader.Filename)
+func (u *UploadService) UploadImage(file multipart.File, fileHeader *multipart.FileHeader) (s3Key string, err error) {
+	log.Print("upload image to s3 :: ", fileHeader.Filename)
 	size := fileHeader.Size
 	buffer := make([]byte, size)
 	file.Read(buffer)
-	s3Key := uuid.New().String() + filepath.Ext(fileHeader.Filename)
-	_, err := u.s3Client.PutObject(&s3.PutObjectInput{
+	s3Key = uuid.New().String() + filepath.Ext(fileHeader.Filename)
+	_, err = u.s3Client.PutObject(&s3.PutObjectInput{
 		Bucket:               aws.String(u.bucket),
 		Key:                  aws.String(s3Key),
 		ACL:                  aws.String("public-read"),
@@ -50,7 +50,7 @@ func (u *UploadService) UploadImage(file multipart.File, fileHeader *multipart.F
 	if err != nil {
 		log.Print(err)
 	}
-	return s3Key, nil
+	return
 }
 
 func getContentType(file string) string {
