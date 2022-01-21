@@ -4,6 +4,7 @@ import (
 	"github.com/danielmunro/otto-image-service/internal/entity"
 	"github.com/danielmunro/otto-image-service/internal/model"
 	"github.com/jinzhu/gorm"
+	"log"
 )
 
 type AlbumRepository struct {
@@ -19,6 +20,7 @@ func (a *AlbumRepository) Create(album *entity.Album) {
 }
 
 func (a *AlbumRepository) FindOrCreateProfileAlbumForUser(user *entity.User) *entity.Album {
+	log.Print("find or create profile album, user :: ", user.ID)
 	album := &entity.Album{}
 	a.conn.Where("user_id = ? AND album_type = ?", user.ID, model.PROFILE_PICS).Scan(&album)
 	if album.Uuid == nil {
