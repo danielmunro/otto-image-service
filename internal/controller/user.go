@@ -10,16 +10,16 @@ import (
 // UploadNewProfilePicV1 - upload a new profile pic
 func UploadNewProfilePicV1(w http.ResponseWriter, r *http.Request) {
 	userUuid := uuid.GetUuidFromPathSecondPosition(r.URL.Path)
-	service.CreateDefaultAuthService().DoWithValidSessionAndUser(w, r, userUuid, func() (interface{}, error) {
-		//tempFile, err := util.StoreUploadedFile(r)
+	service.CreateDefaultAuthService().DoWithValidSessionAndUser(w, r, userUuid, func() (result interface{}, err error) {
 		tempFile, fileHeader, err := r.FormFile("image")
 		if err != nil {
-			return nil, err
+			return
 		}
 		image, err := service.CreateDefaultImageService().CreateNewProfileImage(userUuid, tempFile, fileHeader)
 		if err != nil {
-			return nil, err
+			return
 		}
-		return json.Marshal(image)
+		result, err = json.Marshal(image)
+		return
 	})
 }
