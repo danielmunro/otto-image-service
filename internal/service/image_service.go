@@ -42,30 +42,22 @@ func CreateImageService(imageRepository *repository.ImageRepository, albumReposi
 	}
 }
 
-func (i *ImageService) CreateNewProfileImage(userUuid uuid.UUID, file multipart.File, fileHeader *multipart.FileHeader) (*model.Image, error) {
+func (i *ImageService) CreateNewProfileImage(userUuid uuid.UUID, file multipart.File, fileHeader *multipart.FileHeader) (imageModel *model.Image, err error) {
 	user, err := i.userRepository.FindOneByUuid(userUuid.String())
 	if err != nil {
 		log.Print("no user")
-		return nil, err
+		return
 	}
 	album := i.albumRepository.FindOrCreateProfileAlbumForUser(user)
-	imageUuid := uuid.New()
-	imageEntity := &entity.Image{
-		Filename: "",
-		User:     user,
-		UserID:   user.ID,
-		Album:    album,
-		AlbumID:  album.ID,
-		Uuid:     &imageUuid,
-	}
 	s3Key, err := i.uploadService.UploadImage(file, fileHeader)
 	if err != nil {
 		log.Print("error occurred in image service upload", err)
-		return nil, err
+		return
 	}
+	imageEntity := i.findOrCreateProfileImage(user, album)
 	imageEntity.S3Key = s3Key
-	i.imageRepository.Create(imageEntity)
-	imageModel := mapper.GetImageModelFromEntity(imageEntity)
+	i.imageRepository.Update(imageEntity)
+	imageModel = mapper.GetImageModelFromEntity(imageEntity)
 	data, _ := json.Marshal(imageModel)
 	log.Print("publishing image to kafka: ", string(data))
 	topic := "images"
@@ -76,5 +68,22 @@ func (i *ImageService) CreateNewProfileImage(userUuid uuid.UUID, file multipart.
 				Partition: kafka.PartitionAny},
 		},
 		nil)
-	return imageModel, nil
+	return
+}
+
+func (i *ImageService) findOrCreateProfileImage(user *entity.User, album *entity.Album) (imageEntity *entity.Image) {
+	imageEntity = i.imageRepository.FindByUserAndAlbum(user.Uuid, album.Uuid)
+	if imageEntity.Uuid == nil {
+		imageUuid := uuid.New()
+		imageEntity = &entity.Image{
+			Filename: "",
+			User:     user,
+			UserID:   user.ID,
+			Album:    album,
+			AlbumID:  album.ID,
+			Uuid:     &imageUuid,
+		}
+		i.imageRepository.Create(imageEntity)
+	}
+	return
 }
