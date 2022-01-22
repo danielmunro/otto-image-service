@@ -9,8 +9,8 @@ import (
 func GetUserEntityFromModel(user *model.User) *entity.User {
 	userUuid := uuid.MustParse(user.Uuid)
 	return &entity.User{
-		Uuid:       &userUuid,
-		Username:   user.Username,
+		Uuid:     &userUuid,
+		Username: user.Username,
 	}
 }
 

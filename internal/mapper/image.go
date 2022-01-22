@@ -5,18 +5,12 @@ import (
 	"github.com/danielmunro/otto-image-service/internal/model"
 )
 
-func GetImageEntityFromNewModel(image *model.NewImage) *entity.Image {
-	return &entity.Image{
-		Link: image.Link,
-	}
-}
-
 func GetImageModelFromEntity(image *entity.Image) *model.Image {
 	return &model.Image{
-		Uuid: image.Uuid.String(),
-		Link: image.Link,
-		S3Key: image.S3Key,
+		Uuid:      image.Uuid.String(),
+		Link:      image.Link,
+		S3Key:     image.S3Key,
 		CreatedAt: image.CreatedAt,
-		User: GetUserModelFromEntity(image.User),
+		User:      GetUserModelFromEntity(image.User),
 	}
 }
