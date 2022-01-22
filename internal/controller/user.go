@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"encoding/json"
 	"github.com/danielmunro/otto-image-service/internal/service"
 	"github.com/danielmunro/otto-image-service/internal/uuid"
 	"net/http"
@@ -15,10 +14,7 @@ func UploadNewProfilePicV1(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			return nil, err
 		}
-		image, err := service.CreateDefaultImageService().CreateNewProfileImage(userUuid, tempFile, fileHeader.Filename, fileHeader.Size)
-		if err != nil {
-			return nil, err
-		}
-		return json.Marshal(image)
+		return service.CreateDefaultImageService().
+			CreateNewProfileImage(userUuid, tempFile, fileHeader.Filename, fileHeader.Size)
 	})
 }
