@@ -75,6 +75,8 @@ func (i *ImageService) findOrCreateProfileImage(user *entity.User, album *entity
 	imageEntity = i.imageRepository.FindByUserAndAlbum(user.Uuid, album.Uuid)
 	if imageEntity.Uuid == nil {
 		imageUuid := uuid.New()
+		log.Print("profile pic not found, creating new one, user :: ", user.Uuid)
+		log.Print("image uuid :: ", imageUuid)
 		imageEntity = &entity.Image{
 			Filename: "",
 			User:     user,
