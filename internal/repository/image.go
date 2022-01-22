@@ -25,7 +25,7 @@ func (i *ImageRepository) Save(image *entity.Image) {
 
 func (i *ImageRepository) FindByUserAndAlbum(userUuid *uuid.UUID, albumUuid *uuid.UUID) *entity.Image {
 	log.Print("find or create album, debug user uuid :: ", userUuid)
-	log.Print("find or create album, debug album uuid :: ", albumUuid)
+	log.Print("album uuid :: ", albumUuid)
 	image := &entity.Image{}
 	i.conn.Preload("User").
 		Table("images").
