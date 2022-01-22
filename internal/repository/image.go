@@ -30,6 +30,6 @@ func (i *ImageRepository) FindByUserAndAlbum(userUuid *uuid.UUID, albumUuid *uui
 	i.conn.Table("images").
 		Joins("Album", i.conn.Where(&entity.Album{Uuid: albumUuid})).
 		Joins("User", i.conn.Where(&entity.User{Uuid: userUuid})).
-		Find(&image)
+		Find(image)
 	return image
 }
