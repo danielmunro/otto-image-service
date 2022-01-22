@@ -42,14 +42,14 @@ func CreateImageService(imageRepository *repository.ImageRepository, albumReposi
 	}
 }
 
-func (i *ImageService) CreateNewProfileImage(userUuid uuid.UUID, file multipart.File, fileHeader *multipart.FileHeader) (imageModel *model.Image, err error) {
+func (i *ImageService) CreateNewProfileImage(userUuid uuid.UUID, file multipart.File, filename string, filesize int64) (imageModel *model.Image, err error) {
 	user, err := i.userRepository.FindOneByUuid(userUuid.String())
 	if user.Uuid == nil || err != nil {
 		log.Print("error finding user :: ", err)
 		return
 	}
 	album := i.albumRepository.FindOrCreateProfileAlbumForUser(user)
-	s3Key, err := i.uploadService.UploadImage(file, fileHeader)
+	s3Key, err := i.uploadService.UploadImage(file, filename, filesize)
 	if err != nil {
 		log.Print("error occurred in image service upload", err)
 		return

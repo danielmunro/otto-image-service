@@ -32,19 +32,18 @@ func CreateDefaultUploadService() *UploadService {
 	return CreateUploadService(s3.New(s), os.Getenv("S3_BUCKET"))
 }
 
-func (u *UploadService) UploadImage(file multipart.File, fileHeader *multipart.FileHeader) (s3Key string, err error) {
-	log.Print("upload image to s3 :: ", fileHeader.Filename)
-	size := fileHeader.Size
-	buffer := make([]byte, size)
+func (u *UploadService) UploadImage(file multipart.File, filename string, filesize int64) (s3Key string, err error) {
+	log.Print("upload image to s3 :: ", filename)
+	buffer := make([]byte, filesize)
 	file.Read(buffer)
-	s3Key = uuid.New().String() + filepath.Ext(fileHeader.Filename)
+	s3Key = uuid.New().String() + filepath.Ext(filename)
 	_, err = u.s3Client.PutObject(&s3.PutObjectInput{
 		Bucket:               aws.String(u.bucket),
 		Key:                  aws.String(s3Key),
 		ACL:                  aws.String("public-read"),
 		Body:                 bytes.NewReader(buffer),
-		ContentLength:        aws.Int64(size),
-		ContentType:          aws.String(getContentType(fileHeader.Filename)),
+		ContentLength:        aws.Int64(filesize),
+		ContentType:          aws.String(getContentType(filename)),
 		ServerSideEncryption: aws.String("AES256"),
 	})
 	if err != nil {
