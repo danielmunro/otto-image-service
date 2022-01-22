@@ -27,6 +27,8 @@ func CreateConnection(host string, port string, dbname string, user string, pass
 			dbname,
 			user,
 			password))
+	db.LogMode(true)
+	db.SetLogger(log.New(os.Stdout, "\r\n", 0))
 	if err != nil {
 		log.Fatal(err)
 	}
