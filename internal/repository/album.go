@@ -23,7 +23,10 @@ func (a *AlbumRepository) FindOrCreateProfileAlbumForUser(user *entity.User) *en
 	log.Print("find or create profile album, user :: ", user.ID)
 	album := &entity.Album{}
 	albumType := string(model.PROFILE_PICS)
-	a.conn.Where("user_id = ? AND album_type = ?", user.ID, albumType).Scan(&album)
+	a.conn.
+		Table("albums").
+		Where("user_id = ? AND album_type = ?", user.ID, albumType).
+		Scan(&album)
 	if album.Uuid == nil {
 		album = &entity.Album{
 			Link:        user.Username,

@@ -29,8 +29,8 @@ func (i *ImageRepository) FindByUserAndAlbum(userUuid *uuid.UUID, albumUuid *uui
 	image := &entity.Image{}
 	i.conn.Preload("Album").
 		Table("images").
-		Joins("join users on users.id = albums.user_id and users.uuid = ?", userUuid.String()).
-		Where("uuid = ?", albumUuid.String()).
+		Joins("join users on users.id = albums.user_id").
+		Where("users.uuid = ? and uuid = ?", userUuid.String(), albumUuid.String()).
 		Find(&image)
 	return image
 }
