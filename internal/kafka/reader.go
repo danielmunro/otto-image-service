@@ -12,7 +12,7 @@ func GetReader() *kafka.Consumer {
 		"sasl.mechanisms":   os.Getenv("KAFKA_SASL_MECHANISM"),
 		"sasl.username":     os.Getenv("KAFKA_SASL_USERNAME"),
 		"sasl.password":     os.Getenv("KAFKA_SASL_PASSWORD"),
-		"group.id":          "otto",
+		"group.id":          "image-service",
 		"auto.offset.reset": "earliest",
 	})
 
