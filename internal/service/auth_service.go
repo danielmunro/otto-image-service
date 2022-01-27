@@ -47,7 +47,7 @@ func (a *AuthService) GetSession(sessionId string) (*model.Session, error) {
 }
 
 func (a *AuthService) DoWithValidSessionAndUser(w http.ResponseWriter, r *http.Request, userUuid uuid.UUID, doAction func() (interface{}, error)) {
-	sessionToken := r.Header.Get("x-session-token")
+	sessionToken := a.getSessionToken(r)
 	if sessionToken == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		_, _ = w.Write([]byte("missing required header: x-session-token"))
@@ -67,6 +67,27 @@ func (a *AuthService) DoWithValidSessionAndUser(w http.ResponseWriter, r *http.R
 	util.WriteResponse(w, object, err)
 }
 
+func (a *AuthService) DoWithValidSession(w http.ResponseWriter, r *http.Request, doAction func(session *model.Session) (interface{}, error)) {
+	sessionToken := a.getSessionToken(r)
+	if sessionToken == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		_, _ = w.Write([]byte("missing required header: x-session-token"))
+		return
+	}
+	session, err := a.getSession(sessionToken)
+	if err == nil {
+		log.Print("session validation succeeded, sessionUuid: ", session.User.Uuid)
+	} else {
+		log.Print("FAILED! Either error, or Uuid mismatch :: ", err)
+		err := errors.New("invalid session")
+		w.WriteHeader(http.StatusForbidden)
+		_, _ = w.Write([]byte(err.Error()))
+		return
+	}
+	object, err := doAction(session)
+	util.WriteResponse(w, object, err)
+}
+
 func (a *AuthService) getSession(sessionId string) (*model.Session, error) {
 	ctx := context.TODO()
 	response, _ := a.client.DefaultApi.GetSession(ctx, &auth.GetSessionOpts{
@@ -77,6 +98,10 @@ func (a *AuthService) getSession(sessionId string) (*model.Session, error) {
 	}
 	session := DecodeRequestToNewSession(response)
 	return session, nil
+}
+
+func (a *AuthService) getSessionToken(r *http.Request) string {
+	return r.Header.Get("x-session-token")
 }
 
 func DecodeRequestToNewSession(r *http.Response) *model.Session {

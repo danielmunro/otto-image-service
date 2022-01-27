@@ -85,6 +85,13 @@ var routes = Routes{
 	},
 
 	{
+		"UploadNewLivestreamImageV1",
+		strings.ToUpper("Post"),
+		"/album/livestream",
+		controller.UploadNewLivestreamImageV1,
+	},
+
+	{
 		"UploadNewProfilePicV1",
 		strings.ToUpper("Post"),
 		"/user/{uuid}/image",

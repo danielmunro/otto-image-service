@@ -20,9 +20,16 @@ func (a *AlbumRepository) Create(album *entity.Album) {
 }
 
 func (a *AlbumRepository) FindOrCreateProfileAlbumForUser(user *entity.User) *entity.Album {
+	return a.FindOrCreateAlbumByType(user, string(model.ProfilePics))
+}
+
+func (a *AlbumRepository) FindOrCreateLivestreamAlbumForUser(user *entity.User) *entity.Album {
+	return a.FindOrCreateAlbumByType(user, string(model.Livestream))
+}
+
+func (a *AlbumRepository) FindOrCreateAlbumByType(user *entity.User, albumType string) *entity.Album {
 	log.Print("find or create profile album, user :: ", user.ID)
 	album := &entity.Album{}
-	albumType := string(model.PROFILE_PICS)
 	a.conn.
 		Table("albums").
 		Where("user_id = ? AND album_type = ?", user.ID, albumType).

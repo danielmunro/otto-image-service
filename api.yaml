@@ -84,10 +84,10 @@ paths:
         '404':
           description: |-
             404 response
-  /image:
+  /album/livestream:
     post:
-      operationId: uploadNewImageV1
-      summary: upload a new image
+      operationId: uploadNewLivestreamImageV1
+      summary: upload a new livestream image
       responses:
         '201':
           description: created image

@@ -13,6 +13,7 @@ type AlbumType string
 
 // List of AlbumType
 const (
-	PROFILE_PICS AlbumType = "profile_pics"
-	USER_CREATED AlbumType = "user_created"
+	ProfilePics AlbumType = "profile_pics"
+	UserCreated AlbumType = "user_created"
+	Livestream  AlbumType = "livestream"
 )
