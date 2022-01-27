@@ -1,7 +1,7 @@
 openapi: "3.0.0"
 info:
   title: Otto image service
-  version: 1.0
+  version: "1.0"
 paths:
   /album:
     post:
@@ -75,7 +75,6 @@ paths:
           content:
             application/json:
               schema:
-                type: object
                 $ref: '#/components/schemas/Image'
         '404':
           description: |-
@@ -96,7 +95,6 @@ paths:
           content:
             application/json:
               schema:
-                type: object
                 $ref: "#/components/schemas/NewImage"
 components:
   schemas:
@@ -116,13 +114,11 @@ components:
           items:
             $ref: "#/components/schemas/Album"
     NewAlbum:
-      type: object
       required:
         - name
         - visibility
       properties:
         visibility:
-          type: object
           $ref: "#/components/schemas/Visibility"
         name:
           type: string
@@ -131,10 +127,8 @@ components:
         link:
           type: string
         user:
-          type: object
           $ref: "#/components/schemas/User"
     Album:
-      type: object
       required:
         - uuid
         - created_at
@@ -156,17 +150,14 @@ components:
         link:
           type: string
         album_type:
-          type: object
           $ref: "#/components/schemas/AlbumType"
         visibility:
-          type: object
           $ref: "#/components/schemas/Visibility"
         name:
           type: string
         description:
           type: string
         user:
-          type: object
           $ref: "#/components/schemas/User"
         images:
           type: array
@@ -207,10 +198,8 @@ components:
         link:
           type: string
         album:
-          type: object
           $ref: "#/components/schemas/Album"
         user:
-          type: object
           $ref: "#/components/schemas/User"
     AlbumType:
       type: string
