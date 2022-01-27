@@ -21,13 +21,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Album'
-  /album/{link}:
+  /album/{uuid}:
     get:
       operationId: getAlbumV1
       summary: get an album
       parameters:
         - in: path
-          name: link
+          name: uuid
+          required: true
           schema:
             type: string
       responses:
@@ -40,15 +41,17 @@ paths:
         '404':
           description: |-
             404 response
-  /album/{link}/image:
+  /album/{uuid}/image:
     post:
       operationId: createNewImageV1
       summary: create a new image
       parameters:
         - in: path
-          name: link
+          name: uuid
+          required: true
           schema:
             type: string
+            format: uuid
       requestBody:
         description: image to create
         required: true
@@ -60,15 +63,17 @@ paths:
         '201':
           description: |-
             201 response
-  /image/{link}:
+  /image/{uuid}:
     get:
       operationId: getImageV1
       summary: get an image
       parameters:
         - in: path
-          name: link
+          name: uuid
+          required: true
           schema:
             type: string
+            format: uuid
       responses:
         '200':
           description: get an image
@@ -79,6 +84,17 @@ paths:
         '404':
           description: |-
             404 response
+  /image:
+    post:
+      operationId: uploadNewImageV1
+      summary: upload a new image
+      responses:
+        '201':
+          description: created image
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NewImage"
   /user/{uuid}/image:
     post:
       operationId: uploadNewProfilePicV1
@@ -86,6 +102,7 @@ paths:
       parameters:
         - in: path
           name: uuid
+          required: true
           schema:
             type: string
             format: uuid
