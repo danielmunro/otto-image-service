@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/danielmunro/otto-image-service/internal/db"
 	"github.com/danielmunro/otto-image-service/internal/entity"
@@ -58,16 +59,6 @@ func (i *ImageService) CreateNewLivestreamImage(userUuid uuid.UUID, file multipa
 	imageEntity.S3Key = s3Key
 	i.imageRepository.Create(imageEntity)
 	imageModel = mapper.GetImageModelFromEntity(imageEntity)
-	data, _ := json.Marshal(imageModel)
-	log.Print("publishing image to kafka: ", string(data))
-	topic := "images"
-	_ = i.kafkaWriter.Produce(
-		&kafka.Message{
-			Value: data,
-			TopicPartition: kafka.TopicPartition{Topic: &topic,
-				Partition: kafka.PartitionAny},
-		},
-		nil)
 	return
 }
 
@@ -98,6 +89,14 @@ func (i *ImageService) CreateNewProfileImage(userUuid uuid.UUID, file multipart.
 		},
 		nil)
 	return
+}
+
+func (i *ImageService) GetImage(imageUuid uuid.UUID) (*model.Image, error) {
+	imageEntity := i.imageRepository.FindByUuid(&imageUuid)
+	if imageEntity.ID == 0 {
+		return nil, errors.New("image not found")
+	}
+	return mapper.GetImageModelFromEntity(imageEntity), nil
 }
 
 func (i *ImageService) findOrCreateProfileImage(user *entity.User, album *entity.Album) (imageEntity *entity.Image) {

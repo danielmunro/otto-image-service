@@ -1,9 +1,11 @@
 package controller
 
 import (
+	"encoding/json"
 	"github.com/danielmunro/otto-image-service/internal/auth/model"
 	"github.com/danielmunro/otto-image-service/internal/service"
 	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 	"net/http"
 )
 
@@ -27,4 +29,17 @@ func UploadNewLivestreamImageV1(w http.ResponseWriter, r *http.Request) {
 			fileHeader.Size,
 		)
 	})
+}
+
+// GetImageV1 - get an image
+func GetImageV1(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	uuidParam := uuid.MustParse(params["uuid"])
+	imageModel, err := service.CreateDefaultImageService().GetImage(uuidParam)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	data, _ := json.Marshal(imageModel)
+	_, _ = w.Write(data)
 }

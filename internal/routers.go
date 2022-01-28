@@ -80,8 +80,8 @@ var routes = Routes{
 	{
 		"GetImageV1",
 		strings.ToUpper("Get"),
-		"/image/{link}",
-		GetImageV1,
+		"/image/{uuid}",
+		controller.GetImageV1,
 	},
 
 	{
