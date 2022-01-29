@@ -73,8 +73,15 @@ var routes = Routes{
 	{
 		"GetAlbumV1",
 		strings.ToUpper("Get"),
-		"/album/{link}",
-		GetAlbumV1,
+		"/album/{uuid}",
+		controller.GetAlbumV1,
+	},
+
+	{
+		"GetAlbumsForUserV1",
+		strings.ToUpper("Get"),
+		"/user/{uuid}/album",
+		controller.GetAlbumsForUserV1,
 	},
 
 	{

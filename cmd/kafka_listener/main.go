@@ -7,6 +7,7 @@ import (
 	"github.com/danielmunro/otto-image-service/internal/mapper"
 	"github.com/danielmunro/otto-image-service/internal/model"
 	"github.com/danielmunro/otto-image-service/internal/repository"
+	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 	"github.com/segmentio/kafka-go"
 	"log"
@@ -23,7 +24,7 @@ func main() {
 		log.Print("fail")
 		log.Fatal(err)
 	}
-	_ = conn.SetReadDeadline(time.Now().Add(10*time.Second))
+	_ = conn.SetReadDeadline(time.Now().Add(10 * time.Second))
 	for {
 		batch := conn.ReadBatch(10e3, 1e6) // fetch 10KB min, 1MB max
 		userRepository := repository.CreateUserRepository(db.CreateDefaultConnection())
@@ -37,7 +38,7 @@ func main() {
 }
 
 func ParseBatch(userRepository *repository.UserRepository, batch *kafka.Batch) error {
-	b := make([]byte, 10e3)            // 10KB max per message
+	b := make([]byte, 10e3) // 10KB max per message
 	for {
 		readLen, err := batch.Read(b)
 		if err != nil && err.Error() == "EOF" {
@@ -53,7 +54,7 @@ func ParseBatch(userRepository *repository.UserRepository, batch *kafka.Batch) e
 			log.Print("error decoding message to user, skipping")
 			continue
 		}
-		userEntity, err := userRepository.FindOneByUuid(userModel.Uuid)
+		userEntity, err := userRepository.FindOneByUuid(uuid.MustParse(userModel.Uuid))
 		if err == nil {
 			log.Print("skip user add")
 		} else {

@@ -44,7 +44,7 @@ func CreateImageService(imageRepository *repository.ImageRepository, albumReposi
 }
 
 func (i *ImageService) CreateNewLivestreamImage(userUuid uuid.UUID, file multipart.File, filename string, filesize int64) (imageModel *model.Image, err error) {
-	user, err := i.userRepository.FindOneByUuid(userUuid.String())
+	user, err := i.userRepository.FindOneByUuid(userUuid)
 	if user.Uuid == nil || err != nil {
 		log.Print("error finding user :: ", err)
 		return
@@ -63,7 +63,7 @@ func (i *ImageService) CreateNewLivestreamImage(userUuid uuid.UUID, file multipa
 }
 
 func (i *ImageService) CreateNewProfileImage(userUuid uuid.UUID, file multipart.File, filename string, filesize int64) (imageModel *model.Image, err error) {
-	user, err := i.userRepository.FindOneByUuid(userUuid.String())
+	user, err := i.userRepository.FindOneByUuid(userUuid)
 	if user.Uuid == nil || err != nil {
 		log.Print("error finding user :: ", err)
 		return

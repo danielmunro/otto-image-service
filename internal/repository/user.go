@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/danielmunro/otto-image-service/internal/constants"
 	"github.com/danielmunro/otto-image-service/internal/entity"
+	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
 )
 
@@ -15,7 +16,7 @@ func CreateUserRepository(conn *gorm.DB) *UserRepository {
 	return &UserRepository{conn}
 }
 
-func (u *UserRepository) FindOneByUuid(uuid string) (*entity.User, error) {
+func (u *UserRepository) FindOneByUuid(uuid uuid.UUID) (*entity.User, error) {
 	user := &entity.User{}
 	u.conn.Where("uuid = ?", uuid).Find(user)
 	if user.ID == 0 {

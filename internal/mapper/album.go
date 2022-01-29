@@ -27,3 +27,11 @@ func GetAlbumModelFromEntity(album *entity.Album) *model.Album {
 		UpdatedAt:   album.UpdatedAt,
 	}
 }
+
+func GetAlbumModelsFromEntities(albums []*entity.Album) []*model.Album {
+	albumModels := make([]*model.Album, len(albums))
+	for _, album := range albums {
+		albumModels = append(albumModels, GetAlbumModelFromEntity(album))
+	}
+	return albumModels
+}

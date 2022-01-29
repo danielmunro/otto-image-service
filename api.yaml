@@ -113,6 +113,26 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/NewImage"
+  /user/{uuid}/album:
+    get:
+      operationId: getAlbumsForUserV1
+      summary: get albums for a user
+      parameters:
+        - in: path
+          name: uuid
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: albums for a user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Album"
 components:
   schemas:
     User:

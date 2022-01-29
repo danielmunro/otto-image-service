@@ -6,6 +6,7 @@ import (
 	"github.com/danielmunro/otto-image-service/internal/mapper"
 	"github.com/danielmunro/otto-image-service/internal/model"
 	"github.com/danielmunro/otto-image-service/internal/repository"
+	"github.com/google/uuid"
 	"log"
 )
 
@@ -32,7 +33,7 @@ func loopKafkaReader(userRepository *repository.UserRepository, reader *kafka.Co
 			log.Print("error decoding message to user, skipping", string(data.Value))
 			continue
 		}
-		userEntity, err := userRepository.FindOneByUuid(userModel.Uuid)
+		userEntity, err := userRepository.FindOneByUuid(uuid.MustParse(userModel.Uuid))
 		if err != nil {
 			userEntity = mapper.GetUserEntityFromModel(userModel)
 			userRepository.Create(userEntity)

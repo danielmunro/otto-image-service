@@ -3,6 +3,7 @@ package repository
 import (
 	"github.com/danielmunro/otto-image-service/internal/entity"
 	"github.com/danielmunro/otto-image-service/internal/model"
+	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
 	"log"
 )
@@ -47,4 +48,22 @@ func (a *AlbumRepository) FindOrCreateAlbumByType(user *entity.User, albumType s
 		a.conn.Create(album)
 	}
 	return album
+}
+
+func (a *AlbumRepository) FindAllByUser(userEntity *entity.User) []*entity.Album {
+	var albumEntities []*entity.Album
+	a.conn.Preload("User").
+		Table("Album").
+		Where("user_id = ?", userEntity.ID).
+		Find(&albumEntities)
+	return albumEntities
+}
+
+func (a *AlbumRepository) FindOne(albumUuid uuid.UUID) *entity.Album {
+	var albumEntity *entity.Album
+	a.conn.Preload("User").
+		Table("Album").
+		Where("uuid = ?", albumUuid).
+		Find(&albumEntity)
+	return albumEntity
 }
