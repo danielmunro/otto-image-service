@@ -6,6 +6,7 @@ import (
 	"github.com/danielmunro/otto-image-service/internal/model"
 	"github.com/danielmunro/otto-image-service/internal/repository"
 	"github.com/google/uuid"
+	"log"
 )
 
 type AlbumService struct {
@@ -34,7 +35,11 @@ func (a *AlbumService) CreateAlbum(album *model.NewAlbum) *model.Album {
 }
 
 func (a *AlbumService) GetAlbum(albumUuid uuid.UUID) (*model.Album, error) {
-	albumEntity := a.albumRepository.FindOne(albumUuid)
+	log.Print("GetAlbum with uuid :: ", albumUuid)
+	albumEntity, err := a.albumRepository.FindOne(albumUuid)
+	if err != nil {
+		return nil, err
+	}
 	return mapper.GetAlbumModelFromEntity(albumEntity), nil
 }
 

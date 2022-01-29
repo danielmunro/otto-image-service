@@ -6,6 +6,7 @@ import (
 	"github.com/danielmunro/otto-image-service/internal/service"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 )
 
@@ -29,6 +30,7 @@ func GetAlbumV1(w http.ResponseWriter, r *http.Request) {
 	uuidParam := params["uuid"]
 	album, err := service.CreateDefaultAlbumService().GetAlbum(uuid.MustParse(uuidParam))
 	if err != nil {
+		log.Print("error received from GetAlbumV1 :: ", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}

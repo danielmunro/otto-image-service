@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"github.com/danielmunro/otto-image-service/internal/entity"
 	"github.com/danielmunro/otto-image-service/internal/model"
 	"github.com/google/uuid"
@@ -59,11 +60,14 @@ func (a *AlbumRepository) FindAllByUser(userEntity *entity.User) []*entity.Album
 	return albumEntities
 }
 
-func (a *AlbumRepository) FindOne(albumUuid uuid.UUID) *entity.Album {
+func (a *AlbumRepository) FindOne(albumUuid uuid.UUID) (*entity.Album, error) {
 	var albumEntity *entity.Album
 	a.conn.Preload("User").
 		Table("albums").
 		Where("uuid = ?", albumUuid).
 		Find(&albumEntity)
-	return albumEntity
+	if albumEntity.ID == 0 {
+		return nil, errors.New("album not found")
+	}
+	return albumEntity, nil
 }
