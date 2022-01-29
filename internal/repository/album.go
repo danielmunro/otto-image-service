@@ -66,10 +66,13 @@ func (a *AlbumRepository) FindOne(albumUuid uuid.UUID) (*entity.Album, error) {
 		Preload("Images").
 		Table("albums").
 		Where("uuid = ?", albumUuid).
-		Order("images.id").
 		Find(albumEntity)
 	if albumEntity.ID == 0 {
 		return nil, errors.New("album not found")
+	}
+	// yuck -- reverse slice
+	for i, j := 0, len(albumEntity.Images)-1; i < j; i, j = i+1, j-1 {
+		albumEntity.Images[i], albumEntity.Images[j] = albumEntity.Images[j], albumEntity.Images[i]
 	}
 	return albumEntity, nil
 }
