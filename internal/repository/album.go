@@ -66,6 +66,7 @@ func (a *AlbumRepository) FindOne(albumUuid uuid.UUID) (*entity.Album, error) {
 		Preload("Images").
 		Table("albums").
 		Where("uuid = ?", albumUuid).
+		Order("images.id").
 		Find(albumEntity)
 	if albumEntity.ID == 0 {
 		return nil, errors.New("album not found")
