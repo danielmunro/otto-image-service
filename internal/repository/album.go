@@ -61,11 +61,11 @@ func (a *AlbumRepository) FindAllByUser(userEntity *entity.User) []*entity.Album
 }
 
 func (a *AlbumRepository) FindOne(albumUuid uuid.UUID) (*entity.Album, error) {
-	var albumEntity *entity.Album
+	albumEntity := &entity.Album{}
 	a.conn.Preload("User").
 		Table("albums").
 		Where("uuid = ?", albumUuid).
-		Find(&albumEntity)
+		Find(albumEntity)
 	if albumEntity.ID == 0 {
 		return nil, errors.New("album not found")
 	}
