@@ -63,6 +63,7 @@ func (a *AlbumRepository) FindAllByUser(userEntity *entity.User) []*entity.Album
 func (a *AlbumRepository) FindOne(albumUuid uuid.UUID) (*entity.Album, error) {
 	albumEntity := &entity.Album{}
 	a.conn.Preload("User").
+		Preload("Images").
 		Table("albums").
 		Where("uuid = ?", albumUuid).
 		Find(albumEntity)

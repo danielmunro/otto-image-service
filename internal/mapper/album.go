@@ -25,6 +25,8 @@ func GetAlbumModelFromEntity(album *entity.Album) *model.Album {
 		AlbumType:   model.AlbumType(album.AlbumType),
 		CreatedAt:   album.CreatedAt,
 		UpdatedAt:   album.UpdatedAt,
+		User:        GetUserModelFromEntity(album.User),
+		Images:      GetImageModelsFromEntities(album.Images),
 	}
 }
 
