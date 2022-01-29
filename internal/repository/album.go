@@ -53,7 +53,7 @@ func (a *AlbumRepository) FindOrCreateAlbumByType(user *entity.User, albumType s
 func (a *AlbumRepository) FindAllByUser(userEntity *entity.User) []*entity.Album {
 	var albumEntities []*entity.Album
 	a.conn.Preload("User").
-		Table("album").
+		Table("albums").
 		Where("user_id = ?", userEntity.ID).
 		Find(&albumEntities)
 	return albumEntities
@@ -62,7 +62,7 @@ func (a *AlbumRepository) FindAllByUser(userEntity *entity.User) []*entity.Album
 func (a *AlbumRepository) FindOne(albumUuid uuid.UUID) *entity.Album {
 	var albumEntity *entity.Album
 	a.conn.Preload("User").
-		Table("album").
+		Table("albums").
 		Where("uuid = ?", albumUuid).
 		Find(&albumEntity)
 	return albumEntity
