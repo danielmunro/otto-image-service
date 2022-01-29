@@ -39,8 +39,8 @@ func GetAlbumV1(w http.ResponseWriter, r *http.Request) {
 // GetAlbumsForUserV1 - create a new album
 func GetAlbumsForUserV1(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	uuidParam := params["uuid"]
-	albums, err := service.CreateDefaultAlbumService().GetAlbumsForUser(uuid.MustParse(uuidParam))
+	username := params["username"]
+	albums, err := service.CreateDefaultAlbumService().GetAlbumsForUser(username)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return

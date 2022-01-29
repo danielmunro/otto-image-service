@@ -95,7 +95,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/NewImage"
-  /user/{uuid}/image:
+  /user/{username}/image:
     post:
       operationId: uploadNewProfilePicV1
       summary: upload a new profile pic
@@ -113,7 +113,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/NewImage"
-  /user/{uuid}/album:
+  /user/{username}/album:
     get:
       operationId: getAlbumsForUserV1
       summary: get albums for a user

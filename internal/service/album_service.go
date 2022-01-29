@@ -38,8 +38,8 @@ func (a *AlbumService) GetAlbum(albumUuid uuid.UUID) (*model.Album, error) {
 	return mapper.GetAlbumModelFromEntity(albumEntity), nil
 }
 
-func (a *AlbumService) GetAlbumsForUser(userUuid uuid.UUID) ([]*model.Album, error) {
-	userEntity, err := a.userRepository.FindOneByUuid(userUuid)
+func (a *AlbumService) GetAlbumsForUser(username string) ([]*model.Album, error) {
+	userEntity, err := a.userRepository.FindOneByUsername(username)
 	if err != nil {
 		return nil, err
 	}

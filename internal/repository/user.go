@@ -25,6 +25,15 @@ func (u *UserRepository) FindOneByUuid(uuid uuid.UUID) (*entity.User, error) {
 	return user, nil
 }
 
+func (u *UserRepository) FindOneByUsername(username string) (*entity.User, error) {
+	user := &entity.User{}
+	u.conn.Where("username = ?", username).Find(user)
+	if user.ID == 0 {
+		return nil, errors.New(constants.ErrorMessageUserNotFound)
+	}
+	return user, nil
+}
+
 func (u *UserRepository) Create(user *entity.User) {
 	u.conn.Create(user)
 }
