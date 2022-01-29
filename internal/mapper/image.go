@@ -7,7 +7,7 @@ import (
 
 func GetImageModelFromEntity(image *entity.Image) *model.Image {
 	var userModel model.User
-	if image.User.ID != 0 {
+	if image.User != nil {
 		userModel = GetUserModelFromEntity(image.User)
 	}
 	return &model.Image{
