@@ -11,7 +11,6 @@ package main
 
 import (
 	"github.com/danielmunro/otto-image-service/internal"
-	"github.com/danielmunro/otto-image-service/internal/kafka"
 	"github.com/danielmunro/otto-image-service/internal/middleware"
 	_ "github.com/joho/godotenv/autoload"
 	"log"
@@ -19,16 +18,8 @@ import (
 )
 
 func main() {
-	go serveHttp()
-	readKafka()
+	serveHttp()
 }
-
-func readKafka() {
-	log.Print("connecting to kafka")
-	kafka.InitializeAndRunLoop()
-	log.Print("exit kafka loop")
-}
-
 func serveHttp() {
 	router := internal.NewRouter()
 	log.Print("listening on 8082")

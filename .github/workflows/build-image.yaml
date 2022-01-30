@@ -3,7 +3,7 @@ on:
     branches:
       - main
 jobs:
-  publish-gpr:
+  ci-cd:
     runs-on: ubuntu-latest
     permissions:
       packages: write
@@ -18,3 +18,7 @@ jobs:
           CR_PAT: ${{ secrets.CR_PAT }}
       - run: docker build -t ghcr.io/danielmunro/otto-image-service:latest .
       - run: docker push ghcr.io/danielmunro/otto-image-service:latest
+      - run: mv main-kafka.go main.go
+      - run: mv Dockerfile-kafka Dockerfile
+      - run: docker build -t ghcr.io/danielmunro/otto-image-service:kafka-latest .
+      - run: docker push ghcr.io/danielmunro/otto-image-service:kafka-latest
