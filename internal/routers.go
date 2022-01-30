@@ -99,9 +99,9 @@ var routes = Routes{
 	},
 
 	{
-		"UploadNewProfilePicV1",
+		"UploadNewProfileImageV1",
 		strings.ToUpper("Post"),
-		"/user/{uuid}/image",
-		controller.UploadNewProfilePicV1,
+		"/album/profile",
+		controller.UploadNewProfileImageV1,
 	},
 }
