@@ -68,7 +68,7 @@ func (i *ImageService) CreateNewProfileImage(userUuid uuid.UUID, file multipart.
 		log.Print("error finding user :: ", err)
 		return
 	}
-	album := i.albumRepository.FindOrCreateLivestreamAlbumForUser(user)
+	album := i.albumRepository.FindOrCreateProfileAlbumForUser(user)
 	s3Key, err := i.uploadService.UploadImage(file, filename, filesize)
 	if err != nil {
 		log.Print("error occurred in image service upload", err)
