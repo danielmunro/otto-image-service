@@ -22,14 +22,28 @@ func (a *AlbumRepository) Create(album *entity.Album) {
 }
 
 func (a *AlbumRepository) FindOrCreateProfileAlbumForUser(user *entity.User) *entity.Album {
-	return a.FindOrCreateAlbumByType(user, string(model.ProfilePics))
+	return a.findOrCreateAlbumByType(
+		user,
+		model.ProfilePics,
+		user.Username+"'s profile pictures",
+		"Profile pictures for "+user.Username,
+	)
 }
 
 func (a *AlbumRepository) FindOrCreateLivestreamAlbumForUser(user *entity.User) *entity.Album {
-	return a.FindOrCreateAlbumByType(user, string(model.Livestream))
+	return a.findOrCreateAlbumByType(
+		user,
+		model.Livestream,
+		user.Username+"'s livestream",
+		"Livestream for "+user.Username,
+	)
 }
 
-func (a *AlbumRepository) FindOrCreateAlbumByType(user *entity.User, albumType string) *entity.Album {
+func (a *AlbumRepository) findOrCreateAlbumByType(
+	user *entity.User,
+	albumType model.AlbumType,
+	albumName string,
+	albumDescription string) *entity.Album {
 	log.Print("find or create profile album, user :: ", user.ID)
 	album := &entity.Album{}
 	a.conn.
@@ -39,9 +53,9 @@ func (a *AlbumRepository) FindOrCreateAlbumByType(user *entity.User, albumType s
 	if album.Uuid == nil {
 		album = &entity.Album{
 			Link:        user.Username,
-			AlbumType:   albumType,
-			Name:        user.Username + "'s profile pictures",
-			Description: "Profile pictures for " + user.Username,
+			AlbumType:   string(albumType),
+			Name:        albumName,
+			Description: albumDescription,
 			User:        user,
 			UserID:      user.ID,
 			Visibility:  string(model.PUBLIC),
