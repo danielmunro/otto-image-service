@@ -28,8 +28,10 @@ func CreateAlbumService(albumRepository *repository.AlbumRepository, userReposit
 	}
 }
 
-func (a *AlbumService) CreateAlbum(album *model.NewAlbum) *model.Album {
+func (a *AlbumService) CreateAlbum(userUuid uuid.UUID, album *model.NewAlbum) *model.Album {
 	albumEntity := mapper.GetAlbumEntityFromNewModel(album)
+	user, _ := a.userRepository.FindOneByUuid(userUuid)
+	albumEntity.User = user
 	a.albumRepository.Create(albumEntity)
 	return mapper.GetAlbumModelFromEntity(albumEntity)
 }

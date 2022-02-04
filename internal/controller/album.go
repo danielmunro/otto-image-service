@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	model2 "github.com/danielmunro/otto-image-service/internal/auth/model"
 	"github.com/danielmunro/otto-image-service/internal/model"
 	"github.com/danielmunro/otto-image-service/internal/service"
 	"github.com/google/uuid"
@@ -13,8 +14,8 @@ import (
 // CreateNewAlbumV1 - create a new album
 func CreateNewAlbumV1(w http.ResponseWriter, r *http.Request) {
 	newAlbum := model.DecodeRequestToNewAlbum(r)
-	service.CreateDefaultAuthService().DoWithValidSessionAndUser(w, r, uuid.MustParse(newAlbum.User.Uuid), func() (interface{}, error) {
-		album := service.CreateDefaultAlbumService().CreateAlbum(newAlbum)
+	service.CreateDefaultAuthService().DoWithValidSession(w, r, func(session *model2.Session) (interface{}, error) {
+		album := service.CreateDefaultAlbumService().CreateAlbum(uuid.MustParse(session.User.Uuid), newAlbum)
 		data, err := json.Marshal(album)
 		if err == nil {
 			w.WriteHeader(http.StatusOK)
