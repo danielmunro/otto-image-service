@@ -63,6 +63,26 @@ paths:
         '201':
           description: |-
             201 response
+    get:
+      operationId: getImagesForAlbumV1
+      summary: get images for album
+      parameters:
+        - in: path
+          name: uuid
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '201':
+          description: all images for the album
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Image"
+
   /image/{uuid}:
     get:
       operationId: getImageV1

@@ -92,6 +92,13 @@ var routes = Routes{
 	},
 
 	{
+		"GetImagesForAlbumV1",
+		strings.ToUpper("Get"),
+		"/album/{uuid}/image",
+		controller.GetImagesForAlbumV1,
+	},
+
+	{
 		"UploadNewLivestreamImageV1",
 		strings.ToUpper("Post"),
 		"/album/livestream",

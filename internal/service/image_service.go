@@ -43,6 +43,11 @@ func CreateImageService(imageRepository *repository.ImageRepository, albumReposi
 	}
 }
 
+func (i *ImageService) GetAllImagesForAlbum(albumUuid uuid.UUID) []*model.Image {
+	images := i.imageRepository.FindByAlbumUuid(&albumUuid)
+	return mapper.GetImageModelsFromEntities(images)
+}
+
 func (i *ImageService) CreateNewLivestreamImage(userUuid uuid.UUID, file multipart.File, filename string, filesize int64) (imageModel *model.Image, err error) {
 	user, err := i.userRepository.FindOneByUuid(userUuid)
 	if user.Uuid == nil || err != nil {

@@ -19,10 +19,10 @@ func GetImageModelFromEntity(image *entity.Image) *model.Image {
 	}
 }
 
-func GetImageModelsFromEntities(images []*entity.Image) []model.Image {
-	imageModels := make([]model.Image, len(images))
+func GetImageModelsFromEntities(images []*entity.Image) []*model.Image {
+	imageModels := make([]*model.Image, len(images))
 	for i, image := range images {
-		imageModels[i] = *GetImageModelFromEntity(image)
+		imageModels[i] = GetImageModelFromEntity(image)
 	}
 	return imageModels
 }

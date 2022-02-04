@@ -43,3 +43,14 @@ func GetImageV1(w http.ResponseWriter, r *http.Request) {
 	data, _ := json.Marshal(imageModel)
 	_, _ = w.Write(data)
 }
+
+// GetImagesForAlbumV1 - get images for album
+func GetImagesForAlbumV1(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	uuidParam := params["uuid"]
+
+	imageModels := service.CreateDefaultImageService().GetAllImagesForAlbum(uuid.MustParse(uuidParam))
+	data, _ := json.Marshal(imageModels)
+	_, _ = w.Write(data)
+
+}

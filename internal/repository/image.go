@@ -41,3 +41,14 @@ func (i *ImageRepository) FindByUserAndAlbum(userUuid *uuid.UUID, albumUuid *uui
 		First(&image)
 	return image
 }
+
+func (i *ImageRepository) FindByAlbumUuid(albumUuid *uuid.UUID) []*entity.Image {
+	var imageEntities []*entity.Image
+	i.conn.Preload("User").
+		Table("images").
+		Joins("join albums on albums.id = images.album_id").
+		Joins("join users on users.id = images.user_id").
+		Where("albums.uuid = ?", albumUuid).
+		Find(&imageEntities)
+	return imageEntities
+}
