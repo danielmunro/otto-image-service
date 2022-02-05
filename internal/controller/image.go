@@ -44,6 +44,18 @@ func UploadNewLivestreamImageV1(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// UploadNewProfileImageV1 - upload a new profile pic
+func UploadNewProfileImageV1(w http.ResponseWriter, r *http.Request) {
+	service.CreateDefaultAuthService().DoWithValidSession(w, r, func(session *model.Session) (interface{}, error) {
+		tempFile, fileHeader, err := r.FormFile("image")
+		if err != nil {
+			return nil, err
+		}
+		return service.CreateDefaultImageService().
+			CreateNewProfileImage(uuid.MustParse(session.User.Uuid), tempFile, fileHeader.Filename, fileHeader.Size)
+	})
+}
+
 // GetImageV1 - get an image
 func GetImageV1(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
