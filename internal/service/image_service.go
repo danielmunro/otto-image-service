@@ -48,6 +48,28 @@ func (i *ImageService) GetAllImagesForAlbum(albumUuid uuid.UUID) []*model.Image 
 	return mapper.GetImageModelsFromEntities(images)
 }
 
+func (i *ImageService) CreateNewImageForAlbum(userUuid uuid.UUID, albumUuid uuid.UUID, file multipart.File, filename string, filesize int64) (imageModel *model.Image, err error) {
+	user, err := i.userRepository.FindOneByUuid(userUuid)
+	if user.Uuid == nil || err != nil {
+		log.Print("error finding user :: ", err)
+		return
+	}
+	album, err := i.albumRepository.FindOne(albumUuid)
+	if err != nil {
+		return
+	}
+	s3Key, err := i.uploadService.UploadImage(file, filename, filesize)
+	if err != nil {
+		log.Print("error occurred in image service upload", err)
+		return
+	}
+	imageEntity := i.createNewLivestreamImageEntity(user, album)
+	imageEntity.S3Key = s3Key
+	i.imageRepository.Create(imageEntity)
+	imageModel = mapper.GetImageModelFromEntity(imageEntity)
+	return
+}
+
 func (i *ImageService) CreateNewLivestreamImage(userUuid uuid.UUID, file multipart.File, filename string, filesize int64) (imageModel *model.Image, err error) {
 	user, err := i.userRepository.FindOneByUuid(userUuid)
 	if user.Uuid == nil || err != nil {

@@ -11,8 +11,21 @@ import (
 
 // CreateNewImageV1 - create a new image
 func CreateNewImageV1(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
+	params := mux.Vars(r)
+	albumUuid := uuid.MustParse(params["uuid"])
+	service.CreateDefaultAuthService().DoWithValidSession(w, r, func(session *model.Session) (interface{}, error) {
+		tempFile, fileHeader, err := r.FormFile("image")
+		if err != nil {
+			return nil, err
+		}
+		return service.CreateDefaultImageService().CreateNewImageForAlbum(
+			uuid.MustParse(session.User.Uuid),
+			albumUuid,
+			tempFile,
+			fileHeader.Filename,
+			fileHeader.Size,
+		)
+	})
 }
 
 // UploadNewLivestreamImageV1 - upload a new image
