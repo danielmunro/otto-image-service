@@ -66,7 +66,7 @@ var routes = Routes{
 	{
 		"CreateNewImageV1",
 		strings.ToUpper("Post"),
-		"/album/{link}/image",
+		"/album/{uuid}/image",
 		controller.CreateNewImageV1,
 	},
 
