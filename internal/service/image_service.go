@@ -58,14 +58,7 @@ func (i *ImageService) CreateNewImageForAlbum(userUuid uuid.UUID, albumUuid uuid
 	if err != nil {
 		return
 	}
-	s3Key, err := i.uploadService.UploadImage(file, filename, filesize)
-	if err != nil {
-		log.Print("error occurred in image service upload", err)
-		return
-	}
-	imageEntity := i.createNewLivestreamImageEntity(user, album)
-	imageEntity.S3Key = s3Key
-	i.imageRepository.Create(imageEntity)
+	imageEntity := i.uploadAndCreateImageEntity(user, album, file, filename, filesize)
 	imageModel = mapper.GetImageModelFromEntity(imageEntity)
 	return
 }
@@ -77,14 +70,7 @@ func (i *ImageService) CreateNewLivestreamImage(userUuid uuid.UUID, file multipa
 		return
 	}
 	album := i.albumRepository.FindOrCreateLivestreamAlbumForUser(user)
-	s3Key, err := i.uploadService.UploadImage(file, filename, filesize)
-	if err != nil {
-		log.Print("error occurred in image service upload", err)
-		return
-	}
-	imageEntity := i.createNewLivestreamImageEntity(user, album)
-	imageEntity.S3Key = s3Key
-	i.imageRepository.Create(imageEntity)
+	imageEntity := i.uploadAndCreateImageEntity(user, album, file, filename, filesize)
 	imageModel = mapper.GetImageModelFromEntity(imageEntity)
 	return
 }
@@ -96,14 +82,7 @@ func (i *ImageService) CreateNewProfileImage(userUuid uuid.UUID, file multipart.
 		return
 	}
 	album := i.albumRepository.FindOrCreateProfileAlbumForUser(user)
-	s3Key, err := i.uploadService.UploadImage(file, filename, filesize)
-	if err != nil {
-		log.Print("error occurred in image service upload", err)
-		return
-	}
-	imageEntity := i.createNewLivestreamImageEntity(user, album)
-	imageEntity.S3Key = s3Key
-	i.imageRepository.Save(imageEntity)
+	imageEntity := i.uploadAndCreateImageEntity(user, album, file, filename, filesize)
 	imageModel = mapper.GetImageModelFromEntity(imageEntity)
 	data, _ := json.Marshal(imageModel)
 	log.Print("publishing image to kafka: ", string(data))
@@ -126,6 +105,18 @@ func (i *ImageService) GetImage(imageUuid uuid.UUID) (*model.Image, error) {
 	return mapper.GetImageModelFromEntity(imageEntity), nil
 }
 
+func (i *ImageService) uploadAndCreateImageEntity(user *entity.User, album *entity.Album, file multipart.File, filename string, filesize int64) *entity.Image {
+	s3Key, err := i.uploadService.UploadImage(file, filename, filesize)
+	if err != nil {
+		log.Print("error occurred in image service upload", err)
+		return nil
+	}
+	imageEntity := i.createNewImageEntity(user, album)
+	imageEntity.S3Key = s3Key
+	i.imageRepository.Create(imageEntity)
+	return imageEntity
+}
+
 func (i *ImageService) findOrCreateProfileImage(user *entity.User, album *entity.Album) (imageEntity *entity.Image) {
 	imageEntity = i.imageRepository.FindByUserAndAlbum(user.Uuid, album.Uuid)
 	if imageEntity.Uuid == nil {
@@ -142,7 +133,7 @@ func (i *ImageService) findOrCreateProfileImage(user *entity.User, album *entity
 	return
 }
 
-func (i *ImageService) createNewLivestreamImageEntity(user *entity.User, album *entity.Album) *entity.Image {
+func (i *ImageService) createNewImageEntity(user *entity.User, album *entity.Album) *entity.Image {
 	return &entity.Image{
 		Filename: "",
 		User:     user,
