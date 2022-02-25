@@ -6,7 +6,10 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"log"
 	"os"
+	"time"
 )
+
+var dbConn *gorm.DB
 
 func CreateDefaultConnection() *gorm.DB {
 	return CreateConnection(
@@ -18,19 +21,24 @@ func CreateDefaultConnection() *gorm.DB {
 }
 
 func CreateConnection(host string, port string, dbname string, user string, password string) *gorm.DB {
-	db, err := gorm.Open(
-		"postgres",
-		fmt.Sprintf(
-			"host=%s port=%s dbname=%s user=%s password=%s sslmode=disable",
-			host,
-			port,
-			dbname,
-			user,
-			password))
-	//db.LogMode(true)
-	//db.SetLogger(log.New(os.Stdout, "\r\n", 0))
-	if err != nil {
-		log.Fatal(err)
+	if dbConn == nil {
+		db, err := gorm.Open(
+			"postgres",
+			fmt.Sprintf(
+				"host=%s port=%s dbname=%s user=%s password=%s sslmode=disable",
+				host,
+				port,
+				dbname,
+				user,
+				password))
+		if err != nil {
+			log.Fatal(err)
+		}
+		dbConn = db
+		sqlConnection := dbConn.DB()
+		sqlConnection.SetMaxOpenConns(20)
+		sqlConnection.SetMaxIdleConns(5)
+		sqlConnection.SetConnMaxLifetime(time.Hour)
 	}
-	return db
+	return dbConn
 }
