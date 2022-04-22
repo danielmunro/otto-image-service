@@ -1,0 +1,14 @@
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: image-service
+  description: Otto image service
+  links:
+    - url: https://github.com/danielmunro/otto-image-service
+      title: Git Repository
+spec:
+  type: openapi
+  lifecycle: production
+  owner: dev-team
+  definition:
+    $text: https://github.com/danielmunro/otto-image-service/blob/main/api.yaml
