@@ -14,6 +14,7 @@ spec:
     $text: https://github.com/danielmunro/otto-image-service/blob/main/api.yaml
   dependsOn:
     - resource:image-service-db
+    - resource:kafka
 ---
 apiVersion: backstage.io/v1alpha1
 kind: Resource
