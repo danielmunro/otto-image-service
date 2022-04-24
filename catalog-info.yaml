@@ -12,3 +12,17 @@ spec:
   owner: dev-team
   definition:
     $text: https://github.com/danielmunro/otto-image-service/blob/main/api.yaml
+  dependsOn:
+    - resource:image-service-db
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: image-service-db
+  description: Otto image service DB
+spec:
+  type: database
+  lifecycle: production
+  owner: dev-team
+  dependencyOf:
+    - api:image-service
