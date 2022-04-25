@@ -14,6 +14,7 @@ spec:
     $text: https://github.com/danielmunro/otto-image-service/blob/main/api.yaml
   dependsOn:
     - resource:image-service-db
+    - resource:image-service-s3
     - resource:kafka
 ---
 apiVersion: backstage.io/v1alpha1
@@ -23,6 +24,18 @@ metadata:
   description: Otto image service DB
 spec:
   type: database
+  lifecycle: production
+  owner: dev-team
+  dependencyOf:
+    - api:image-service
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: image-service-s3
+  description: Otto image service S3 bucket
+spec:
+  type: s3
   lifecycle: production
   owner: dev-team
   dependencyOf:
