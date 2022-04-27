@@ -12,8 +12,9 @@ spec:
   owner: dev-team
   definition:
     $text: https://github.com/danielmunro/otto-image-service/blob/main/api.yaml
+  consumesApis:
+    - user-service
   dependsOn:
-    - api:user-service
     - resource:image-service-db
     - resource:image-service-s3
     - resource:kafka
