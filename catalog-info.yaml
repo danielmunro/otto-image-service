@@ -13,6 +13,7 @@ spec:
   definition:
     $text: https://github.com/danielmunro/otto-image-service/blob/main/api.yaml
   dependsOn:
+    - component:user-service
     - resource:image-service-db
     - resource:image-service-s3
     - resource:kafka
