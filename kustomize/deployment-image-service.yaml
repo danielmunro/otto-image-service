@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
       - name: otto-image-service
-        image: ghcr.io/danielmunro/otto-image-service:latest
+        image: ghcr.io/danielmunro/otto-image-service:v0.1
         imagePullPolicy: Always
         ports:
           - containerPort: 8082
