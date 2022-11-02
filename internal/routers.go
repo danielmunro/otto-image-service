@@ -80,7 +80,7 @@ var routes = Routes{
 	{
 		"GetAlbumsForUserV1",
 		strings.ToUpper("Get"),
-		"/user/{username}/album",
+		"/albums/:username",
 		controller.GetAlbumsForUserV1,
 	},
 

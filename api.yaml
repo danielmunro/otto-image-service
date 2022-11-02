@@ -126,7 +126,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Image"
-  /user/{username}/album:
+  /albums/:username:
     get:
       operationId: getAlbumsForUserV1
       summary: get albums for a user
