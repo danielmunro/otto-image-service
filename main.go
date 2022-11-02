@@ -13,6 +13,7 @@ import (
 	"github.com/danielmunro/otto-image-service/internal"
 	"github.com/danielmunro/otto-image-service/internal/middleware"
 	_ "github.com/joho/godotenv/autoload"
+	"github.com/rs/cors"
 	"log"
 	"net/http"
 )
@@ -22,7 +23,8 @@ func main() {
 }
 func serveHttp() {
 	router := internal.NewRouter()
+	handler := cors.AllowAll().Handler(router)
 	log.Print("listening on 8082")
 	log.Fatal(http.ListenAndServe(":8082",
-		middleware.FileSizeLimit(middleware.ContentTypeMiddleware(router))))
+		middleware.FileSizeLimit(middleware.ContentTypeMiddleware(handler))))
 }
