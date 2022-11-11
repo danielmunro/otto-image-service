@@ -1,5 +1,5 @@
-FROM golang:1.13
-WORKDIR /go/src/github.com/danielmunro/otto-image-service
+FROM golang:1.17
+WORKDIR /go/src
 COPY . .
 RUN go get -d -v ./...
 RUN go build

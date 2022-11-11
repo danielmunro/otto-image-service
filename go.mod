@@ -1,6 +1,6 @@
 module github.com/danielmunro/otto-image-service
 
-go 1.13
+go 1.17
 
 require (
 	github.com/antihax/optional v1.0.0
