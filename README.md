@@ -1,6 +1,3 @@
-# otto-image-service
+# Archived
 
-## Todo
-* Associate uploaded profile pics with album
-* Tests
-* Kafka publish changes
+[New home here](https://github.com/third-place/image-service)
